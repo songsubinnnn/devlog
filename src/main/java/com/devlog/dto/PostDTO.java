@@ -1,0 +1,51 @@
+package com.devlog.dto;
+
+import com.devlog.entity.PostEntity;
+import lombok.*;
+
+import java.time.LocalDateTime;
+
+/**
+ * @author sbsong
+ * @package com.devlog.dto
+ * @Classname PostDTO.java
+ * @Description ""
+ * <PRE>
+ * ---------------------------------
+ * 개정이력
+ * 2025-07-11 sbsong : 최초작성
+ * </PRE>
+ * @since 2025-07-11
+ */
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class PostDTO {
+    private Long id;
+    private String title;
+    private String content;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    public static PostDTO fromEntity(PostEntity entity){
+        return PostDTO.builder()
+                .id(entity.getId())
+                .title(entity.getTitle())
+                .content(entity.getContent())
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .build();
+    }
+
+    public PostEntity toEntity(){
+        return PostEntity.builder()
+                .id(this.id)
+                .title(this.title)
+                .content(this.content)
+                .createdAt(this.createdAt)
+                .updatedAt(this.updatedAt)
+                .build();
+    }
+}
