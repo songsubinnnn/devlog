@@ -35,4 +35,10 @@ public class PostViewController {
         model.addAttribute("postList", postList);
         return "post/list"; // templates/post/list.html
     }
+
+    @GetMapping("/write")
+    public String writePost(Model model) {
+        model.addAttribute("postDto", new PostDTO());
+        return "post/write";
+    }
 }

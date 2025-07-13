@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>글 작성 - Devlog</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 min-h-screen py-10 px-4">
+<div class="max-w-3xl mx-auto bg-white shadow-lg rounded-2xl p-8">
+    <h1 class="text-2xl font-bold mb-6 text-gray-800">새 글 작성</h1>
+
+    <form th:action="@{/posts}" method="post" enctype="multipart/form-data" th:object="${postDto}" class="space-y-6">
+        <div>
+            <label for="title" class="block text-sm font-medium text-gray-700">제목</label>
+            <input type="text" id="title" name="title" th:field="*{title}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+        </div>
+
+        <div>
+            <label for="content" class="block text-sm font-medium text-gray-700">본문</label>
+            <textarea id="content" name="content" th:field="*{content}" rows="10" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
+        </div>
+
+<!--        <div>-->
+<!--            <label for="tags" class="block text-sm font-medium text-gray-700">태그 (쉼표로 구분)</label>-->
+<!--            <input type="text" id="tags" name="tags" th:field="*{tags}" placeholder="#Java, #Spring" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">-->
+<!--        </div>-->
+
+<!--        <div>-->
+<!--            <label for="thumbnail" class="block text-sm font-medium text-gray-700">썸네일 이미지</label>-->
+<!--            <input type="file" id="thumbnail" name="thumbnail" class="mt-1 block w-full text-gray-700">-->
+<!--        </div>-->
+
+        <div class="flex justify-end">
+            <button type="submit" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow">작성하기</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>
