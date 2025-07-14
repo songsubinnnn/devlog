@@ -4,12 +4,12 @@ package com.devlog.controller;
 import com.devlog.dto.PostDTO;
 import com.devlog.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * @author sbsong
@@ -30,15 +30,15 @@ public class PostViewController {
     private final PostService postService;
 
     @GetMapping
-    public String getPosts(Model model) {
-        List<PostDTO> postList =  postService.getAllPosts();
+    public String getPosts(Model model, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        Page<PostDTO> postList = postService.getAllPosts(page, size);
         model.addAttribute("postList", postList);
         return "post/list"; // templates/post/list.html
     }
 
     @GetMapping("/write")
     public String writePost(Model model) {
-        model.addAttribute("postDto", new PostDTO());
+        model.addAttribute("postDTO", new PostDTO());
         return "post/write";
     }
 }

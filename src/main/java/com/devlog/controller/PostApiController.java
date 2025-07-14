@@ -3,9 +3,12 @@ package com.devlog.controller;
 import com.devlog.dto.PostDTO;
 import com.devlog.service.PostService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 /**
  * The type Post controller.
@@ -22,17 +25,19 @@ import org.springframework.web.bind.annotation.*;
 public class PostApiController {
 
     private final PostService postService;
+    private static final Logger logger = LoggerFactory.getLogger(PostService.class);
 
     /**
-     * 게시글 생성
+     * 게시글 작성
      *
      * @param postDTO the post dto
      * @return the response entity
      */
     @PostMapping
-    public ResponseEntity<Long> createPost(@RequestBody PostDTO postDTO){
+    public ResponseEntity<Map<String, String>> createPost(@ModelAttribute PostDTO postDTO) {
         Long id = postService.createPost(postDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(id);
+        logger.info("Post created: {}", id);
+        return ResponseEntity.ok(Map.of("redirectUrl", "/posts"));
     }
 
     /**
@@ -42,7 +47,7 @@ public class PostApiController {
      * @return the response entity
      */
     @GetMapping("/{id}")
-    public ResponseEntity<PostDTO> getPost(@PathVariable Long id){
+    public ResponseEntity<PostDTO> getPost(@PathVariable Long id) {
         PostDTO postDTO = postService.getPost(id);
         return ResponseEntity.ok(postDTO);
     }
@@ -56,7 +61,7 @@ public class PostApiController {
      * @return the response entity
      */
     @PutMapping("/{id}")
-    public ResponseEntity<PostDTO> updatePost(@PathVariable Long id, @RequestBody PostDTO postDTO){
+    public ResponseEntity<PostDTO> updatePost(@PathVariable Long id, @RequestBody PostDTO postDTO) {
         PostDTO updatedPost = postService.updatePost(id, postDTO);
         return ResponseEntity.ok(updatedPost);
     }
@@ -68,7 +73,7 @@ public class PostApiController {
      * @return the response entity
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePost(@PathVariable Long id){
+    public ResponseEntity<Void> deletePost(@PathVariable Long id) {
         postService.deletePost(id);
         return ResponseEntity.noContent().build();
     }

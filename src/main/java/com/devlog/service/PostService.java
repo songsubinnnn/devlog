@@ -4,10 +4,13 @@ import com.devlog.dto.PostDTO;
 import com.devlog.entity.PostEntity;
 import com.devlog.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * The type Post service.
@@ -22,6 +25,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
+    private static final Logger logger = LoggerFactory.getLogger(PostService.class);
 
     /**
      * 게시글 작성
@@ -29,9 +33,10 @@ public class PostService {
      * @param postDTO the post dto
      * @return the long
      */
-    public Long createPost(PostDTO postDTO){
-       PostEntity entity = postRepository.save(postDTO.toEntity());
-       return entity.getId();
+    public Long createPost(PostDTO postDTO) {
+        PostEntity entity = postRepository.save(postDTO.toEntity());
+        logger.info(entity.toString());
+        return entity.getId();
     }
 
     /**
@@ -40,10 +45,10 @@ public class PostService {
      * @param id the id
      * @return the post dto
      */
-    public PostDTO getPost(Long id){
-       PostEntity entity = postRepository.findById(id)
-               .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
-       return PostDTO.fromEntity(entity);
+    public PostDTO getPost(Long id) {
+        PostEntity entity = postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
+        return PostDTO.fromEntity(entity);
     }
 
     /**
@@ -51,12 +56,11 @@ public class PostService {
      *
      * @return the list
      */
-    public List<PostDTO> getAllPosts(){
-        List<PostEntity> entities = postRepository.findAll();
+    public Page<PostDTO> getAllPosts(int page, int size) {
+        Pageable pageable = PageRequest.of(page,size, Sort.by("createdAt").descending());
+        Page<PostEntity> entityPage = postRepository.findAllByOrderByCreatedAtDesc(pageable);
 
-        return entities.stream()
-                .map(PostDTO::fromEntity)
-                .collect(Collectors.toList());
+        return entityPage.map(PostDTO::fromEntity);
     }
 
     /**
@@ -66,7 +70,7 @@ public class PostService {
      * @param postDTO the post dto
      * @return the post dto
      */
-    public PostDTO updatePost(Long id, PostDTO postDTO){
+    public PostDTO updatePost(Long id, PostDTO postDTO) {
         PostEntity entity = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException(("게시글이 존재하지 않습니다.")));
 
@@ -81,8 +85,8 @@ public class PostService {
      *
      * @param id the id
      */
-    public void deletePost(Long id){
-        if(!postRepository.existsById(id)){
+    public void deletePost(Long id) {
+        if (!postRepository.existsById(id)) {
             throw new RuntimeException("게시글이 존재하지 않아요.");
         }
         postRepository.deleteById(id);

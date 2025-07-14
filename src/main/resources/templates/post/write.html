@@ -9,7 +9,7 @@
 <div class="max-w-3xl mx-auto bg-white shadow-lg rounded-2xl p-8">
     <h1 class="text-2xl font-bold mb-6 text-gray-800">새 글 작성</h1>
 
-    <form th:action="@{/posts}" method="post" enctype="multipart/form-data" th:object="${postDto}" class="space-y-6">
+    <form id="postForm" th:action="@{/api/posts}" enctype="multipart/form-data" th:object="${postDTO}" class="space-y-6">
         <div>
             <label for="title" class="block text-sm font-medium text-gray-700">제목</label>
             <input type="text" id="title" name="title" th:field="*{title}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
@@ -35,5 +35,33 @@
         </div>
     </form>
 </div>
+<script>
+    document.getElementById('postForm').addEventListener('submit',function(e){
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form); // form 내용 → FormData 객체로 변환
+
+        fetch('/api/posts',{ // form.action
+            method: 'POST',
+            body: formData,
+        })
+            .then(response => {
+                if(!response.ok){
+                    throw new Error('서버 에러');
+                }
+                return response.json();
+            })
+            .then(data =>{
+                alert('등록 완료');
+                if(data.redirectUrl){
+                    window.location.href = data.redirectUrl;
+                }
+            })
+            .catch(error => {
+                console.error('에러 발생:', error);
+                alert('게시글 등록에 실패했습니다.');
+            });
+    });
+</script>
 </body>
 </html>

@@ -1,6 +1,7 @@
 package com.devlog.dto;
 
 import com.devlog.entity.PostEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -26,10 +27,12 @@ public class PostDTO {
     private Long id;
     private String title;
     private String content;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 
-    public static PostDTO fromEntity(PostEntity entity){
+    public static PostDTO fromEntity(PostEntity entity) {
         return PostDTO.builder()
                 .id(entity.getId())
                 .title(entity.getTitle())
@@ -39,7 +42,7 @@ public class PostDTO {
                 .build();
     }
 
-    public PostEntity toEntity(){
+    public PostEntity toEntity() {
         return PostEntity.builder()
                 .id(this.id)
                 .title(this.title)
