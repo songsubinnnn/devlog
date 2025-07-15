@@ -1,7 +1,7 @@
 package com.devlog.controller;
 
 
-import com.devlog.dto.PostDTO;
+import com.devlog.dto.post.PostRequest;
 import com.devlog.dto.post.PostResponse;
 import com.devlog.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * The type Post view controller.
@@ -46,7 +45,7 @@ public class PostViewController {
      */
     @GetMapping("/write")
     public String writePost(Model model) {
-        model.addAttribute("postDTO", new PostDTO());
+        model.addAttribute("postDTO", new PostRequest());
         return "post/write";
     }
 }
