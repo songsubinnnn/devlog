@@ -1,13 +1,12 @@
 package com.devlog.controller;
 
-import com.devlog.entity.PostEntity;
+import com.devlog.domain.post.Post;
 import com.devlog.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -31,11 +30,9 @@ public class TestController {
 
     @GetMapping("/create")
     public String createPost(){
-        PostEntity post = PostEntity.builder()
+        Post post = Post.builder()
                 .title("first post")
                 .content("포스트 1")
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
                 .build();
 
         postRepository.save(post);
@@ -43,7 +40,7 @@ public class TestController {
     }
 
     @GetMapping("/list")
-    public List<PostEntity> list(){
+    public List<Post> list(){
         return postRepository.findAll();
     }
 }

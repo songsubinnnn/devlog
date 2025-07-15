@@ -23,8 +23,6 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 public class Tag {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,4 +33,10 @@ public class Tag {
 
     @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostTag> postTags = new ArrayList<>();
+
+    public static Tag of(String name){
+        Tag tag = new Tag();
+        tag.setName(name);
+        return tag;
+    }
 }

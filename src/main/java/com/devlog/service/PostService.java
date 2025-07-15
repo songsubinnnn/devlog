@@ -1,16 +1,21 @@
 package com.devlog.service;
 
-import com.devlog.dto.PostDTO;
-import com.devlog.entity.PostEntity;
+import com.devlog.domain.post.Post;
+import com.devlog.domain.tag.Tag;
+import com.devlog.domain.user.User;
+import com.devlog.dto.post.PostRequest;
+import com.devlog.dto.post.PostResponse;
+import com.devlog.mapper.PostMapper;
 import com.devlog.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * The type Post service.
@@ -25,66 +30,42 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
+    private final PostMapper postMapper;
     private static final Logger logger = LoggerFactory.getLogger(PostService.class);
+    private final TagService tagService;
 
-    /**
-     * 게시글 작성
-     *
-     * @param postDTO the post dto
-     * @return the long
-     */
-    public Long createPost(PostDTO postDTO) {
-        PostEntity entity = postRepository.save(postDTO.toEntity());
-        logger.info(entity.toString());
-        return entity.getId();
+
+    public PostResponse createPost(PostRequest request, User author) {
+        Post entity = postMapper.toEntity(request,author);
+        Post savedPost = postRepository.save(entity);
+        return postMapper.toResponse(savedPost);
     }
 
-    /**
-     * 게시글 상세 조회
-     *
-     * @param id the id
-     * @return the post dto
-     */
-    public PostDTO getPost(Long id) {
-        PostEntity entity = postRepository.findById(id)
+
+    public PostResponse getPost(Long id) {
+        Post entity = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
-        return PostDTO.fromEntity(entity);
+        return postMapper.toResponse(entity);
     }
 
-    /**
-     * 게시글 목록 조회
-     *
-     * @return the list
-     */
-    public Page<PostDTO> getAllPosts(int page, int size) {
-        Pageable pageable = PageRequest.of(page,size, Sort.by("createdAt").descending());
-        Page<PostEntity> entityPage = postRepository.findAllByOrderByCreatedAtDesc(pageable);
 
-        return entityPage.map(PostDTO::fromEntity);
+    public Page<PostResponse> getAllPosts(Pageable pageable) {
+        Page<Post> entityPage = postRepository.findAllByDeletedAtFalseOrderByCreatedAtDesc(pageable);
+        return entityPage.map(postMapper::toResponse);
     }
 
-    /**
-     * 게시글 수정
-     *
-     * @param id      the id
-     * @param postDTO the post dto
-     * @return the post dto
-     */
-    public PostDTO updatePost(Long id, PostDTO postDTO) {
-        PostEntity entity = postRepository.findById(id)
+    @Transactional
+    public PostResponse updatePost(Long id, PostRequest request) {
+        Post entity = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException(("게시글이 존재하지 않습니다.")));
 
-        entity.setTitle(postDTO.getTitle());
-        entity.setContent(postDTO.getContent());
-        PostEntity updatedEntity = postRepository.save(entity);
-        return PostDTO.fromEntity(updatedEntity);
+        List<Tag> tagList = tagService.findOrCreateByNames(request.getTags());
+        entity.update(request.getTitle(),request.getContent(),request.getThumbnailUrl(),tagList);
+
+        return postMapper.toResponse(entity);
     }
 
-    /**
-     * 게시글 삭제
-     *
-     * @param id the id
-     */
+
     public void deletePost(Long id) {
         if (!postRepository.existsById(id)) {
             throw new RuntimeException("게시글이 존재하지 않아요.");

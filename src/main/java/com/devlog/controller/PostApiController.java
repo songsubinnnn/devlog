@@ -1,6 +1,8 @@
 package com.devlog.controller;
 
-import com.devlog.dto.PostDTO;
+import com.devlog.domain.user.User;
+import com.devlog.dto.post.PostRequest;
+import com.devlog.dto.post.PostResponse;
 import com.devlog.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -27,16 +29,11 @@ public class PostApiController {
     private final PostService postService;
     private static final Logger logger = LoggerFactory.getLogger(PostService.class);
 
-    /**
-     * 게시글 작성
-     *
-     * @param postDTO the post dto
-     * @return the response entity
-     */
+
     @PostMapping
-    public ResponseEntity<Map<String, String>> createPost(@ModelAttribute PostDTO postDTO) {
-        Long id = postService.createPost(postDTO);
-        logger.info("Post created: {}", id);
+    public ResponseEntity<Map<String, String>> createPost(@ModelAttribute PostRequest request, User author) {
+        PostResponse response = postService.createPost(request, author);
+        logger.info("Post created: {}", response.getId());
         return ResponseEntity.ok(Map.of("redirectUrl", "/posts"));
     }
 
@@ -47,22 +44,15 @@ public class PostApiController {
      * @return the response entity
      */
     @GetMapping("/{id}")
-    public ResponseEntity<PostDTO> getPost(@PathVariable Long id) {
-        PostDTO postDTO = postService.getPost(id);
-        return ResponseEntity.ok(postDTO);
+    public ResponseEntity<PostResponse> getPost(@PathVariable Long id) {
+        PostResponse postResponse = postService.getPost(id);
+        return ResponseEntity.ok(postResponse);
     }
 
 
-    /**
-     * 게시글 수정
-     *
-     * @param id      the id
-     * @param postDTO the post dto
-     * @return the response entity
-     */
     @PutMapping("/{id}")
-    public ResponseEntity<PostDTO> updatePost(@PathVariable Long id, @RequestBody PostDTO postDTO) {
-        PostDTO updatedPost = postService.updatePost(id, postDTO);
+    public ResponseEntity<PostResponse> updatePost(@PathVariable Long id, @RequestBody PostRequest request) {
+        PostResponse updatedPost = postService.updatePost(id, request);
         return ResponseEntity.ok(updatedPost);
     }
 

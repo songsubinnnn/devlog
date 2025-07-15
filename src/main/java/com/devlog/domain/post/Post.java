@@ -1,11 +1,13 @@
 package com.devlog.domain.post;
 
 import com.devlog.domain.BaseEntity;
+import com.devlog.domain.tag.Tag;
 import com.devlog.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +44,7 @@ public class Post extends BaseEntity {
     private String thumbnailUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="author_id", nullable=false)
+    @JoinColumn(name = "author_id", nullable = false)
     private User author;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -50,6 +52,22 @@ public class Post extends BaseEntity {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostTag> postTags = new ArrayList<>();
+
+    public void update(String title, String content, String thumbnailUrl, List<Tag> tags) {
+        this.title = title;
+        this.content = content;
+        this.thumbnailUrl = thumbnailUrl;
+        this.updatedAt = LocalDateTime.now();
+        // 기존 postTags 제거
+        this.postTags.clear();
+
+        // 새로운 태그 목록으로 PostTag 재생성
+        for (Tag tag : tags) {
+            this.postTags.add(PostTag.of(this,tag));
+        }
+
+
+    }
 
 
 }

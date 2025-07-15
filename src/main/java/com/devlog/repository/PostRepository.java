@@ -1,6 +1,6 @@
 package com.devlog.repository;
 
-import com.devlog.entity.PostEntity;
+import com.devlog.domain.post.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,6 +19,6 @@ import org.springframework.stereotype.Repository;
  * @since 2025-07-11
  */
 @Repository
-public interface PostRepository extends JpaRepository<PostEntity,Long> {
-    Page<PostEntity> findAllByOrderByCreatedAtDesc(Pageable pageable);
+public interface PostRepository extends JpaRepository<Post,Long> {
+    Page<Post> findAllByDeletedAtFalseOrderByCreatedAtDesc(Pageable pageable);
 }
