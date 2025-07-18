@@ -6,7 +6,9 @@ import com.devlog.dto.post.PostRequest;
 import com.devlog.dto.post.PostResponse;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -27,26 +29,28 @@ public class PostMapper { // postDTO <-> entity
     // request -> entity
     public Post toEntity(PostRequest postRequest, User author) {
         return Post.builder()
-                .title(postRequest.getTitle())
-                .content(postRequest.getContent())
-                .author(author) // 로그인한 사용자
-                .build();
+            .title(postRequest.getTitle())
+            .content(postRequest.getContent())
+            .author(author) // 로그인한 사용자(추후)
+            .build();
     }
 
     // entity -> response
     public PostResponse toResponse(Post entity) {
-        List<String> tags = entity.getPostTags().stream() // List<엔티티> -> List<필드>
-                .map(postTag -> postTag.getTag().getName())
-                .collect(Collectors.toList());
+        List<String> tags = Optional.ofNullable(entity.getPostTags())
+            .orElse(Collections.emptyList()) // null이면 빈 리스트
+            .stream() // List<엔티티> -> List<필드>
+            .map(postTag -> postTag.getTag().getName())
+            .collect(Collectors.toList());
 
         return PostResponse.builder()
-                .id(entity.getId())
-                .title(entity.getTitle())
-                .content(entity.getContent())
-                .authorNickname(entity.getAuthor().getNickname())
-                .tags(tags)
-                .createdAt(entity.getCreatedAt())
-                .updatedAt(entity.getUpdatedAt())
-                .build();
+            .id(entity.getId())
+            .title(entity.getTitle())
+            .content(entity.getContent())
+            .authorNickname(entity.getAuthor().getNickname())
+            .tags(tags)
+            .createdAt(entity.getCreatedAt())
+            .updatedAt(entity.getUpdatedAt())
+            .build();
     }
 }

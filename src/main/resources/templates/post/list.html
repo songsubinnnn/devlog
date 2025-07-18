@@ -1,61 +1,64 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
-    <title>HOME</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- Tailwind CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8"/>
+  <title>HOME</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 font-sans">
 
 <div class="container mx-auto px-4 py-8 max-w-7xl">
-    <!-- 상단 헤더 -->
-    <div class="flex justify-between items-center mb-8">
-        <h2 class="text-2xl font-semibold flex items-center text-gray-900">
-            <i class="fa-solid fa-rectangle-list mr-2"></i>DevLog
-        </h2>
-        <a href="/posts/write" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition flex items-center">
-            <i class="fa-solid fa-pen-to-square mr-1"></i>글쓰기
-        </a>
+  <!-- 상단 헤더 -->
+  <div class="flex justify-between items-center mb-8">
+    <h2 class="text-2xl font-semibold flex items-center text-gray-900">
+      <i class="fa-solid fa-rectangle-list mr-2"></i>DevLog
+    </h2>
+    <a href="/posts/write"
+       class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition flex items-center">
+      <i class="fa-solid fa-pen-to-square mr-1"></i>글쓰기
+    </a>
+  </div>
+
+  <!-- 카드 리스트: grid + gap -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div th:each="post : ${postList}" class="bg-white rounded-lg shadow hover:shadow-lg transition p-6">
+      <a th:href="@{'/posts/' + ${post.id}}" class="block">
+        <h5 class="text-lg font-semibold mb-2 text-gray-900" th:text="${post.title}">제목</h5>
+        <p class="text-sm text-gray-500 mb-1" th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}">날짜</p>
+        <p class="text-sm text-gray-500 mb-1" th:text="${post.authorNickname}">글쓴이</p>
+      </a>
     </div>
+  </div>
 
-    <!-- 카드 리스트: grid + gap -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div th:each="post : ${postList}" class="bg-white rounded-lg shadow hover:shadow-lg transition p-6">
-            <a th:href="@{'/view/' + ${post.id}}" class="block">
-                <h5 class="text-lg font-semibold mb-2 text-gray-900" th:text="${post.title}">제목</h5>
-                <p class="text-sm text-gray-500 mb-1" th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}">날짜</p>
-            </a>
-        </div>
-    </div>
+  <!-- 페이징 -->
+  <nav th:if="${postList.totalElements > 0}" class="flex justify-center mt-8 space-x-2" aria-label="Pagination">
+    <!-- 이전 -->
+    <a th:if="${postList.hasPrevious()}"
+       th:href="@{/posts(page=${postList.number - 1}, size=${postList.size})}"
+       class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-200">이전</a>
+    <span th:if="${!postList.hasPrevious()}"
+          class="px-3 py-1 rounded border border-gray-300 text-gray-400 cursor-not-allowed">이전</span>
 
-    <!-- 페이징 -->
-    <nav class="flex justify-center mt-8 space-x-2" aria-label="Pagination">
-        <!-- 이전 -->
-        <a th:if="${postList.hasPrevious()}"
-           th:href="@{/posts(page=${postList.number - 1}, size=${postList.size})}"
-           class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-200">이전</a>
-        <span th:if="${!postList.hasPrevious()}"
-              class="px-3 py-1 rounded border border-gray-300 text-gray-400 cursor-not-allowed">이전</span>
+    <!-- 숫자 버튼 -->
+    <a th:each="i : ${#numbers.sequence(0, postList.totalPages - 1)}"
+       th:href="@{/posts(page=${i}, size=${postList.size})}"
+       th:text="${i + 1}"
+       th:classappend="${i == postList.number} ? 'bg-blue-600 text-white border-blue-600' : 'border-gray-300 text-gray-700 hover:bg-gray-200'"
+       class="px-3 py-1 rounded border cursor-pointer"></a>
 
-        <!-- 숫자 버튼 -->
-        <a th:each="i : ${#numbers.sequence(0, postList.totalPages - 1)}"
-           th:href="@{/posts(page=${i}, size=${postList.size})}"
-           th:text="${i + 1}"
-           th:classappend="${i == postList.number} ? 'bg-blue-600 text-white border-blue-600' : 'border-gray-300 text-gray-700 hover:bg-gray-200'"
-           class="px-3 py-1 rounded border cursor-pointer"></a>
-
-        <!-- 다음 -->
-        <a th:if="${postList.hasNext()}"
-           th:href="@{/posts(page=${postList.number + 1}, size=${postList.size})}"
-           class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-200">다음</a>
-        <span th:if="${!postList.hasNext()}"
-              class="px-3 py-1 rounded border border-gray-300 text-gray-400 cursor-not-allowed">다음</span>
-    </nav>
+    <!-- 다음 -->
+    <a th:if="${postList.hasNext()}"
+       th:href="@{/posts(page=${postList.number + 1}, size=${postList.size})}"
+       class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-200">다음</a>
+    <span th:if="${!postList.hasNext()}"
+          class="px-3 py-1 rounded border border-gray-300 text-gray-400 cursor-not-allowed">다음</span>
+  </nav>
+  <div th:if="${postList.totalElements == 0}" class="text-center text-gray-500 mt-12">
+    작성된 게시글이 없습니다.
+  </div>
 </div>
 
-<!-- FontAwesome CDN (아이콘용) -->
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </body>
 </html>

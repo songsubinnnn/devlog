@@ -20,5 +20,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface PostRepository extends JpaRepository<Post,Long> {
-    Page<Post> findAllByDeletedAtFalseOrderByCreatedAtDesc(Pageable pageable);
+    Page<Post> findAllByIsDeletedFalseOrderByCreatedAtDesc(Pageable pageable);
 }

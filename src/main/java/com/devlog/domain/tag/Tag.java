@@ -34,6 +34,9 @@ public class Tag {
     @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostTag> postTags = new ArrayList<>();
 
+    public Tag(String name) {
+        this.name = name;
+    }
     public static Tag of(String name){
         Tag tag = new Tag();
         tag.setName(name);

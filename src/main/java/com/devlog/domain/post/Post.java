@@ -44,7 +44,7 @@ public class Post extends BaseEntity {
     private String thumbnailUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id", nullable = false)
+    @JoinColumn(name = "author_id", nullable = true)
     private User author;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -62,12 +62,12 @@ public class Post extends BaseEntity {
         this.postTags.clear();
 
         // 새로운 태그 목록으로 PostTag 재생성
-        for (Tag tag : tags) {
-            this.postTags.add(PostTag.of(this,tag));
+        if (tags != null) {
+            for (Tag tag : tags) {
+                if (tag != null) {
+                    this.postTags.add(PostTag.of(this, tag));
+                }
+            }
         }
-
-
     }
-
-
 }

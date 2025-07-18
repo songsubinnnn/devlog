@@ -32,28 +32,23 @@ public class PostApiController {
 
     @PostMapping
     public ResponseEntity<Map<String, String>> createPost(@ModelAttribute PostRequest request, User author) {
+        author.setId(1L); // test용
         PostResponse response = postService.createPost(request, author);
         logger.info("Post created: {}", response.getId());
         return ResponseEntity.ok(Map.of("redirectUrl", "/posts"));
     }
 
-    /**
-     * 게시글 상세 조회
-     *
-     * @param id the id
-     * @return the response entity
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<PostResponse> getPost(@PathVariable Long id) {
-        PostResponse postResponse = postService.getPost(id);
-        return ResponseEntity.ok(postResponse);
-    }
-
+//    @GetMapping("/{id}")
+//    public ResponseEntity<PostResponse> getPost(@PathVariable Long id) {
+//        PostResponse postResponse = postService.getPost(id);
+//        return ResponseEntity.ok(postResponse);
+//    }
+//
 
     @PutMapping("/{id}")
-    public ResponseEntity<PostResponse> updatePost(@PathVariable Long id, @RequestBody PostRequest request) {
+    public ResponseEntity<Map<String,String>> updatePost(@PathVariable Long id, @ModelAttribute PostRequest request) {
         PostResponse updatedPost = postService.updatePost(id, request);
-        return ResponseEntity.ok(updatedPost);
+        return ResponseEntity.ok(Map.of("redirectUrl","/posts/"+updatedPost.getId()));
     }
 
     /**

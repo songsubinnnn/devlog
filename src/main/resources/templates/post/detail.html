@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="${post.title}">글 상세 - Devlog</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 min-h-screen py-10 px-4">
+<div class="max-w-3xl mx-auto bg-white shadow-lg rounded-2xl p-8">
+  <h1 class="text-3xl font-bold text-gray-800 mb-4" th:text="${post.title}">글 제목</h1>
+
+  <div class="text-sm text-gray-500 mb-4">
+    작성자: <span th:text="${post.authorNickname}">작성자</span> |
+    작성일: <span th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span>
+  </div>
+
+  <!--  <div th:if="${post.thumbnailUrl != null}" class="mb-6">-->
+  <!--    <img th:src="@{${post.thumbnailUrl}}" alt="썸네일 이미지" class="w-full rounded-lg shadow-md">-->
+  <!--  </div>-->
+
+  <div class="prose prose-lg max-w-none text-gray-800 mb-6" th:utext="${post.content}">
+    본문 내용
+  </div>
+
+  <div class="mb-6">
+    <h3 class="text-sm font-semibold text-gray-600 mb-1">태그</h3>
+    <div class="flex flex-wrap gap-2">
+            <span th:each="tag : ${post.tags}"
+                  th:text="'#' + ${tag}"
+                  class="inline-block bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm"></span>
+    </div>
+  </div>
+
+  <div class="flex justify-end gap-2">
+    <a th:href="@{/posts/edit/{id}(id=${post.id})}"
+       class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition">
+      ✏️ 수정
+    </a>
+    <form th:action="@{/posts/delete/{id}(id=${post.id})}" method="post"
+          onsubmit="return confirm('정말 삭제하시겠습니까?');">
+      <button type="submit"
+              class="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-md transition">
+        🗑 삭제
+      </button>
+    </form>
+    <a th:href="@{/posts}"
+       class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition">
+      목록
+    </a>
+  </div>
+</div>
+</body>
+</html>

@@ -50,7 +50,7 @@ public class PostService {
 
 
     public Page<PostResponse> getAllPosts(Pageable pageable) {
-        Page<Post> entityPage = postRepository.findAllByDeletedAtFalseOrderByCreatedAtDesc(pageable);
+        Page<Post> entityPage = postRepository.findAllByIsDeletedFalseOrderByCreatedAtDesc(pageable);
         return entityPage.map(postMapper::toResponse);
     }
 

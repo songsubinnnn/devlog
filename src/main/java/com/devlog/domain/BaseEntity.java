@@ -5,6 +5,7 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -36,6 +37,7 @@ public abstract class BaseEntity {
     protected LocalDateTime updatedAt;
 
     @Column(nullable = false)
+    @ColumnDefault("false")
     protected Boolean isDeleted = false;
 
     protected LocalDateTime deletedAt;

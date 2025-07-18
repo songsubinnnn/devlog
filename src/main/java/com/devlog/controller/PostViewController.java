@@ -12,6 +12,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -37,15 +38,23 @@ public class PostViewController {
         return "post/list"; // templates/post/list.html
     }
 
-    /**
-     * 게시글 작성 화면
-     *
-     * @param model the model
-     * @return the string
-     */
     @GetMapping("/write")
     public String writePost(Model model) {
         model.addAttribute("postDTO", new PostRequest());
         return "post/write";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String editPost(@PathVariable Long id, Model model) {
+        PostResponse response = postService.getPost(id);
+        model.addAttribute("postDTO", response);
+        return "post/write";
+    }
+
+    @GetMapping("/{id}")
+    public String getPostDetail(@PathVariable Long id, Model model) {
+        PostResponse response = postService.getPost(id);
+        model.addAttribute("post", response);
+        return "post/detail";
     }
 }

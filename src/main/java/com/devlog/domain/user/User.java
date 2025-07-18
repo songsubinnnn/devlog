@@ -17,6 +17,7 @@ import lombok.*;
  * @since 2025-07-15
  */
 @Entity
+@Table(name="users")
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
