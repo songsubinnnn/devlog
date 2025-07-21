@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,5 +57,11 @@ public class PostViewController {
         PostResponse response = postService.getPost(id);
         model.addAttribute("post", response);
         return "post/detail";
+    }
+
+    @DeleteMapping("/{id}")
+    public String deletePost(@PathVariable Long id){
+        postService.softDeletePost(id);
+        return "redirect:/posts"; // 삭제 후 목록 페이지로
     }
 }

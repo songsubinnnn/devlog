@@ -38,28 +38,11 @@ public class PostApiController {
         return ResponseEntity.ok(Map.of("redirectUrl", "/posts"));
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<PostResponse> getPost(@PathVariable Long id) {
-//        PostResponse postResponse = postService.getPost(id);
-//        return ResponseEntity.ok(postResponse);
-//    }
-//
 
     @PutMapping("/{id}")
-    public ResponseEntity<Map<String,String>> updatePost(@PathVariable Long id, @ModelAttribute PostRequest request) {
+    public ResponseEntity<Map<String, String>> updatePost(@PathVariable Long id, @ModelAttribute PostRequest request) {
         PostResponse updatedPost = postService.updatePost(id, request);
-        return ResponseEntity.ok(Map.of("redirectUrl","/posts/"+updatedPost.getId()));
+        return ResponseEntity.ok(Map.of("redirectUrl", "/posts/" + updatedPost.getId()));
     }
 
-    /**
-     * 게시글 삭제
-     *
-     * @param id the id
-     * @return the response entity
-     */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePost(@PathVariable Long id) {
-        postService.deletePost(id);
-        return ResponseEntity.noContent().build();
-    }
 }

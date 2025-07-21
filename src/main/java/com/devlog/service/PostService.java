@@ -34,7 +34,7 @@ public class PostService {
     private static final Logger logger = LoggerFactory.getLogger(PostService.class);
     private final TagService tagService;
 
-
+    @Transactional
     public PostResponse createPost(PostRequest request, User author) {
         Post entity = postMapper.toEntity(request,author);
         Post savedPost = postRepository.save(entity);
@@ -65,11 +65,10 @@ public class PostService {
         return postMapper.toResponse(entity);
     }
 
-
-    public void deletePost(Long id) {
-        if (!postRepository.existsById(id)) {
-            throw new RuntimeException("게시글이 존재하지 않아요.");
-        }
-        postRepository.deleteById(id);
+    @Transactional
+    public void softDeletePost(Long id) {
+         Post post = postRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
+        post.softDeleted();
     }
 }
