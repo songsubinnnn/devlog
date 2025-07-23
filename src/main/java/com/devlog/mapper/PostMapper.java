@@ -31,6 +31,7 @@ public class PostMapper { // postDTO <-> entity
         return Post.builder()
             .title(postRequest.getTitle())
             .content(postRequest.getContent())
+            .thumbnail(postRequest.getThumbnailUrl())
             .author(author) // 로그인한 사용자(추후)
             .build();
     }
@@ -47,6 +48,7 @@ public class PostMapper { // postDTO <-> entity
             .id(entity.getId())
             .title(entity.getTitle())
             .content(entity.getContent())
+            .thumbnailUrl(entity.getThumbnail().getFileUrl())
             .authorNickname(entity.getAuthor().getNickname())
             .tags(tags)
             .createdAt(entity.getCreatedAt())

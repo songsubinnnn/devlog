@@ -9,7 +9,7 @@
 <div class="max-w-3xl mx-auto bg-white shadow-lg rounded-2xl p-8">
   <h1 class="text-2xl font-bold mb-6 text-gray-800" th:text="${postDTO.id} != null ? '✏️ EDIT ' : '✏️'"></h1>
 
-  <form id="postForm" th:action="@{/api/posts}" enctype="multipart/form-data" th:object="${postDTO}" class="space-y-6">
+  <form id="postForm" th:action="@{/posts}" enctype="multipart/form-data" th:object="${postDTO}" class="space-y-6">
     <input type="hidden" id="id" name="id" th:value="${postDTO.id}"/>
     <div>
       <label for="title" class="block text-sm font-medium text-gray-700">제목</label>
@@ -50,7 +50,7 @@
     const form = e.target;
     const formData = new FormData(form); // form 내용 -> FormData 객체로 변환
     const postId = form.querySelector('input[name="id"]')?.value;
-    const url = postId ? `/api/posts/${postId}` : '/api/posts';
+    const url = postId ? `/posts/${postId}` : '/posts';
     const method = postId ? 'PUT' : 'POST';
 
     fetch(url, { // form.action

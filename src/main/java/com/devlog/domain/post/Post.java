@@ -1,6 +1,7 @@
 package com.devlog.domain.post;
 
 import com.devlog.domain.BaseEntity;
+import com.devlog.domain.file.File;
 import com.devlog.domain.tag.Tag;
 import com.devlog.domain.user.User;
 import jakarta.persistence.*;
@@ -41,23 +42,30 @@ public class Post extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    private String thumbnailUrl;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "thumbnail_file_id") // fk 컬럼명
+    private File thumbnail;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = true)
     private User author;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true) // 부모 저장/삭제 시 자식도 함께 처리
     private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostTag> postTags = new ArrayList<>();
 
-    public void update(String title, String content, String thumbnailUrl, List<Tag> tags) {
+    @Column(name = "view_count", nullable = false)
+    private Integer viewCount = 0;
+
+    // 비즈니스 메서드
+    public void update(String title, String content, File thumbnail, List<Tag> tags) {
         this.title = title;
         this.content = content;
-        this.thumbnailUrl = thumbnailUrl;
+        this.thumbnail = thumbnail;
         this.updatedAt = LocalDateTime.now();
+        this.viewCount = 0;
         // 기존 postTags 제거
         this.postTags.clear();
 
@@ -70,4 +78,9 @@ public class Post extends BaseEntity {
             }
         }
     }
+
+    public void increaseViewCount() {
+        this.viewCount++;
+    }
+
 }

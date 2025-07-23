@@ -1,16 +1,11 @@
 package com.devlog.controller;
 
-import com.devlog.domain.user.User;
-import com.devlog.dto.post.PostRequest;
-import com.devlog.dto.post.PostResponse;
 import com.devlog.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * The type Post controller.
@@ -30,19 +25,9 @@ public class PostApiController {
     private static final Logger logger = LoggerFactory.getLogger(PostService.class);
 
 
-    @PostMapping
-    public ResponseEntity<Map<String, String>> createPost(@ModelAttribute PostRequest request, User author) {
-        author.setId(1L); // test용
-        PostResponse response = postService.createPost(request, author);
-        logger.info("Post created: {}", response.getId());
-        return ResponseEntity.ok(Map.of("redirectUrl", "/posts"));
-    }
 
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Map<String, String>> updatePost(@PathVariable Long id, @ModelAttribute PostRequest request) {
-        PostResponse updatedPost = postService.updatePost(id, request);
-        return ResponseEntity.ok(Map.of("redirectUrl", "/posts/" + updatedPost.getId()));
-    }
+
+
 
 }

@@ -2,6 +2,7 @@ package com.devlog.dto.post;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -22,12 +23,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PostRequest { // client -> server
+public class PostRequest { // client -> server 보내는 요청데이터를 DTO로 받기 위함
     private Long id;
     @NotBlank(message = "제목은 필수값입니다.")
     private String title;
     @NotBlank(message = "내용은 필수값입니다.")
     private String content;
-    private String thumbnailUrl;
+    private MultipartFile thumbnail;
     private List<String> tags; // 클라이언트는 태그 이름만 보냄
 }

@@ -27,6 +27,7 @@ public class PostResponse {
     private Long id;
     private String title;
     private String content;
+    private String thumbnailUrl;
     private String authorNickname; // response에만 필요한 데이터
     private List<String> tags; // List<PostTag> -> List<String>
 
