@@ -7,9 +7,9 @@
 </head>
 <body class="bg-gray-50 min-h-screen py-10 px-4">
 <div class="max-w-3xl mx-auto bg-white shadow-lg rounded-2xl p-8">
-  <h1 class="text-2xl font-bold mb-6 text-gray-800" th:text="${postDTO.id} != null ? '✏️ EDIT ' : '✏️'"></h1>
+  <h1 class="text-2xl font-bold mb-6 text-gray-800" th:text="${isEdit}? '✏️ 게시글 수정 ' : '✏️ 새 게시글'"></h1>
 
-  <form id="postForm" th:action="@{/posts}" enctype="multipart/form-data" th:object="${postDTO}" class="space-y-6">
+  <form id="postForm" th:action="${isEdit} ? @{/posts/{id}(id=${postDTO.id})} : @{/posts}" enctype="multipart/form-data" th:object="${postDTO}" method="post" class="space-y-6">
     <input type="hidden" id="id" name="id" th:value="${postDTO.id}"/>
     <div>
       <label for="title" class="block text-sm font-medium text-gray-700">제목</label>
@@ -35,6 +35,10 @@
       <label for="thumbnail" class="block text-sm font-medium text-gray-700">썸네일 이미지</label>
       <input type="file" id="thumbnail" name="thumbnail" class="mt-1 block w-full text-gray-700">
     </div>
+    <div>
+      <label for="attachments" class="block text-sm font-medium text-gray-700">첨부파일</label>
+      <input type="file" id="attachments" name="attachments" class="mt-1 block w-full text-gray-700" multiple>
+    </div>
 
     <div class="flex justify-end">
       <button type="submit"
@@ -44,36 +48,37 @@
     </div>
   </form>
 </div>
-<script>
-  document.getElementById('postForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    const form = e.target;
-    const formData = new FormData(form); // form 내용 -> FormData 객체로 변환
-    const postId = form.querySelector('input[name="id"]')?.value;
-    const url = postId ? `/posts/${postId}` : '/posts';
-    const method = postId ? 'PUT' : 'POST';
-
-    fetch(url, { // form.action
-      method: method,
-      body: formData,
-    })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('서버 에러');
-        }
-        return response.json();
-      })
-      .then(data => {
-        alert('성공적으로 등록되었습니다.');
-        if (data.redirectUrl) {
-          window.location.href = data.redirectUrl;
-        }
-      })
-      .catch(error => {
-        console.error('에러 발생:', error);
-        alert('게시글 등록에 실패했습니다.');
-      });
-  });
+<script th:if="${alertMessage}">
+    alert('[[${alertMessage}]]');
+  // document.getElementById('postForm').addEventListener('submit', function (e) {
+  //   e.preventDefault();
+  //   const form = e.target;
+  //   const formData = new FormData(form); // form 내용 -> FormData 객체로 변환
+  //   const postId = form.querySelector('input[name="id"]')?.value;
+  //   const url = postId ? `/api/posts/${postId}` : '/api/posts';
+  //   const method = postId ? 'PUT' : 'POST';
+  //
+  //   fetch(url, { // form.action
+  //     method: method,
+  //     body: formData,
+  //   })
+  //     .then(response => {
+  //       if (!response.ok) {
+  //         throw new Error('서버 에러');
+  //       }
+  //       return response.json();
+  //     })
+  //     .then(data => {
+  //       alert('성공적으로 등록되었습니다.');
+  //       if (data.redirectUrl) {
+  //         window.location.href = data.redirectUrl;
+  //       }
+  //     })
+  //     .catch(error => {
+  //       console.error('에러 발생:', error);
+  //       alert('게시글 등록에 실패했습니다.');
+  //     });
+  // });
 </script>
 </body>
 </html>

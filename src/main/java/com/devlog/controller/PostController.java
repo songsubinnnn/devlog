@@ -15,6 +15,10 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 /**
  * The type Post view controller.
@@ -44,6 +48,7 @@ public class PostController {
     @GetMapping
     public String getPostList(Model model, @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         Page<PostResponse> postList = postService.getAllPosts(pageable);
+
         model.addAttribute("postList", postList);
         return "post/list"; // templates/post/list.html
     }
@@ -57,8 +62,10 @@ public class PostController {
     @GetMapping("/write")
     public String writePostForm(Model model) {
         model.addAttribute("postDTO", new PostRequest());
+        model.addAttribute("isEdit", false);
         return "post/write";
     }
+
 
     /**
      * 등록 처리
@@ -68,12 +75,19 @@ public class PostController {
      * @return the response entity
      */
     @PostMapping
-    public String createPost(@ModelAttribute PostRequest request, User author) {
+    public String createPost(@ModelAttribute PostRequest request, MultipartFile thumbnail, List<MultipartFile> attachments, User author, RedirectAttributes ra) {
         author.setId(1L); // test용
-        PostResponse response = postService.createPost(request, author);
-        logger.info("Post created: {}", response.getId());
-        return "redirect:/posts";
+        try {
+            PostResponse response = postService.createPost(request, thumbnail, attachments, author);
+            logger.info("Post created: {}", response.getId());
+            ra.addFlashAttribute("message", "게시글이 등록되었습니다.");
+            return "redirect:/posts";
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "게시글 등록 중 문제가 발생했습니다.");
+            return "redirect:/posts/write";
+        }
     }
+
 
     /**
      * 수정 폼
@@ -86,6 +100,7 @@ public class PostController {
     public String editPostForm(@PathVariable Long id, Model model) {
         PostResponse response = postService.getPost(id);
         model.addAttribute("postDTO", response);
+        model.addAttribute("isEdit", true);
         return "post/write";
     }
 
@@ -127,4 +142,6 @@ public class PostController {
         postService.softDeletePost(id);
         return "redirect:/posts"; // 삭제 후 목록 페이지로
     }
+
+
 }

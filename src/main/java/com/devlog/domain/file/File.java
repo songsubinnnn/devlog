@@ -44,6 +44,10 @@ public class File extends BaseEntity {
     @Column(nullable = false)
     private String filePath; // 실제 저장된 로컬 경로
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private FileType fileType;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;

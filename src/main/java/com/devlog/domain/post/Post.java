@@ -42,9 +42,8 @@ public class Post extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "thumbnail_file_id") // fk 컬럼명
-    private File thumbnail;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<File> files = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = true)
@@ -60,10 +59,9 @@ public class Post extends BaseEntity {
     private Integer viewCount = 0;
 
     // 비즈니스 메서드
-    public void update(String title, String content, File thumbnail, List<Tag> tags) {
+    public void update(String title, String content, List<Tag> tags) {
         this.title = title;
         this.content = content;
-        this.thumbnail = thumbnail;
         this.updatedAt = LocalDateTime.now();
         this.viewCount = 0;
         // 기존 postTags 제거
@@ -77,6 +75,18 @@ public class Post extends BaseEntity {
                 }
             }
         }
+    }
+
+    public void addFile(File file) {
+        files.add(file);
+        file.setPost(this);
+    }
+
+    public void clearFiles(){
+        for(File file : files){
+            file.setPost(null);
+        }
+        files.clear();
     }
 
     public void increaseViewCount() {
