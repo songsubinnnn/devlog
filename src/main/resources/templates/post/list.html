@@ -28,7 +28,7 @@
         <div class="relative h-48 bg-gray-200">
           <!-- Base64 이미지 표시 -->
           <img th:if="${post.hasThumbnail()}"
-               th:src="${post.thumbnailBase64}"
+               th:src="${post.thumbnail.base64}"
                th:alt="${post.title}"
                class="w-full h-full object-cover">
 

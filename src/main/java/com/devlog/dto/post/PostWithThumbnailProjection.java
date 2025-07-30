@@ -1,5 +1,10 @@
 package com.devlog.dto.post;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+import java.time.LocalDateTime;
+
 /**
  * @author sbsong
  * @package com.devlog.dto.post
@@ -12,10 +17,14 @@ package com.devlog.dto.post;
  * </PRE>
  * @since 2025-07-25
  */
-public interface PostWithThumbnailProjection {
-        Long getId();
-        String getTitle();
-        String getContent();
-        String getFilePath(); // File Entity의 필드
+@Getter
+@AllArgsConstructor
+public class PostWithThumbnailProjection {
+    private Long id;
+    private String title;
+    private String content;
+    private String filePath;
+    private String authorNickname;
+    private LocalDateTime createdAt;
 
 }

@@ -21,7 +21,6 @@
   <div class="prose prose-lg max-w-none text-gray-800 mb-6" th:utext="${post.content}">
     본문 내용
   </div>
-
   <div class="mb-6">
     <h3 class="text-sm font-semibold text-gray-600 mb-1">태그</h3>
     <div class="flex flex-wrap gap-2">
@@ -29,6 +28,15 @@
                   th:text="'#' + ${tag}"
                   class="inline-block bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm"></span>
     </div>
+  </div>
+  <!-- 첨부 파일 영역 -->
+  <div th:if="${post.attachments != null and #lists.size(post.attachments) > 0}">
+    <h3>첨부 파일</h3>
+    <ul>
+      <li th:each="file : ${post.attachments}">
+        <a th:href="@{${file.fileUrl}}" th:text="${file.originalFileName}" target="_blank"></a>
+      </li>
+    </ul>
   </div>
 
   <div class="flex justify-end gap-2">

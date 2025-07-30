@@ -22,7 +22,10 @@ import lombok.*;
 public class FileResponse { // 응답 시 실제 저장된 파일명, URL 등 클라이언트에게 필요한 정보 제공
     private Long id;
     private String storedFileName;
+    private String base64;
     private String originalFileName;
     private String fileUrl;
+    private String filePath;
+    private String fileType;
     private Long size;
 }

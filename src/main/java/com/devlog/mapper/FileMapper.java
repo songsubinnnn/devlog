@@ -2,6 +2,7 @@ package com.devlog.mapper;
 
 import com.devlog.domain.file.File;
 import com.devlog.dto.file.FileResponse;
+import org.springframework.stereotype.Component;
 
 /**
  * @author sbsong
@@ -15,8 +16,9 @@ import com.devlog.dto.file.FileResponse;
  * </PRE>
  * @since 2025-07-23
  */
+@Component
 public class FileMapper {
-    public static File toEntity(String originFileNm, String storedFileNm, String filePath, String fileUrl, Long fileSize){
+    public File toEntity(String originFileNm, String storedFileNm, String filePath, String fileUrl, Long fileSize) {
         return File.builder()
             .originalFileName(originFileNm)
             .storedFileName(storedFileNm)
@@ -26,7 +28,7 @@ public class FileMapper {
             .build();
     }
 
-    public static FileResponse toResponse(File fileEntity){
+    public FileResponse toResponse(File fileEntity) {
         return FileResponse.builder()
             .originalFileName(fileEntity.getOriginalFileName())
             .storedFileName(fileEntity.getStoredFileName())

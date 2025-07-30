@@ -1,5 +1,6 @@
 package com.devlog.mapper;
 
+import com.devlog.domain.file.File;
 import com.devlog.domain.post.Post;
 import com.devlog.domain.user.User;
 import com.devlog.dto.post.PostRequest;
@@ -24,7 +25,12 @@ import java.util.stream.Collectors;
  * @since 2025-07-15
  */
 @Component
-public class PostMapper { // postDTO <-> entity
+public class PostMapper {
+    private final FileMapper fileMapper;
+
+    public PostMapper(FileMapper fileMapper) {
+        this.fileMapper = fileMapper;
+    }
 
     // request -> entity
     public Post toEntity(PostRequest postRequest, User author) {
@@ -37,11 +43,13 @@ public class PostMapper { // postDTO <-> entity
 
     // entity -> response
     public PostResponse toResponse(Post entity) {
+        // 태그
         List<String> tags = Optional.ofNullable(entity.getPostTags())
             .orElse(Collections.emptyList()) // null이면 빈 리스트
             .stream() // List<엔티티> -> List<필드>
             .map(postTag -> postTag.getTag().getName())
             .collect(Collectors.toList());
+
 
         return PostResponse.builder()
             .id(entity.getId())
@@ -51,6 +59,21 @@ public class PostMapper { // postDTO <-> entity
             .tags(tags)
             .createdAt(entity.getCreatedAt())
             .updatedAt(entity.getUpdatedAt())
+            .build();
+    }
+
+    public PostResponse toPostDetailResponse(Post post, File thumbnail, List<File> attachments) {
+        return PostResponse.builder()
+            .id(post.getId())
+            .title(post.getTitle())
+            .content(post.getContent())
+            .authorNickname(post.getAuthor().getNickname())
+            .createdAt(post.getCreatedAt())
+            .updatedAt(post.getUpdatedAt())
+            .thumbnail(thumbnail != null ? fileMapper.toResponse(thumbnail) : null)
+            .attachments(attachments != null ? attachments.stream()
+                .map(fileMapper::toResponse)
+                .collect(Collectors.toList()) : Collections.emptyList())
             .build();
     }
 }

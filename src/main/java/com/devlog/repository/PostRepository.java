@@ -28,14 +28,13 @@ public interface PostRepository extends JpaRepository<Post,Long> {
     Optional<Post> findByIdAndIsDeletedFalse(Long id);
 
     @Query(value = """
-        SELECT p.id AS id,
-               p.title AS title,
-               p.content AS content,
-               f.filePath AS filePath
-        FROM Post p
-        LEFT JOIN File f ON f.post.id = p.id
-        WHERE p.isDeleted = false
-    """,
+            SELECT new com.devlog.dto.post.PostWithThumbnailProjection(
+                                                   p.id, p.title, p.content, f.filePath, u.nickname, p.createdAt)
+            FROM Post p
+            LEFT JOIN File f ON f.post.id = p.id
+            JOIN p.author u
+            WHERE p.isDeleted = false
+        """,
         countQuery = """
                     SELECT count(p)
                     FROM Post p

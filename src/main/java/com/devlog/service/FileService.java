@@ -3,9 +3,12 @@ package com.devlog.service;
 import com.devlog.domain.file.File;
 import com.devlog.domain.file.FileType;
 import com.devlog.domain.post.Post;
+import com.devlog.dto.post.PostResponse;
 import com.devlog.repository.FileRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +18,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -36,7 +40,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional
 public class FileService {
-
+    private static final Logger logger = LoggerFactory.getLogger(PostService.class);
     private final FileRepository fileRepository;
 
     @Value("${file.upload-dir}")
@@ -53,6 +57,11 @@ public class FileService {
         } catch (IOException e) {
             throw new RuntimeException("업로드 디렉토리 생성 실패: " + uploadDir, e);
         }
+    }
+
+    public List<File> getFiles(Long id) { // 서비스에서 엔티티 -> dto 변환
+        return fileRepository.findByPostIdAndIsDeletedFalse(id);
+
     }
 
     public File uploadFile(MultipartFile file, FileType fileType, Post post) {
@@ -93,6 +102,51 @@ public class FileService {
     private String getExtension(String fileName) {
         int dotIndex = fileName.lastIndexOf('.');
         return dotIndex == -1 ? "" : fileName.substring(dotIndex + 1);
+    }
+
+
+    public void loadThumbnailBase64(PostResponse post) {
+        String path = post.getThumbnail().getFilePath();
+        if (path != null) {
+            try {
+                String base64 = convertImageToBase64(path);
+                post.getThumbnail().setBase64(base64);
+                post.hasThumbnail();
+            } catch (IOException e) {
+                logger.warn("썸네일 로드 실패 - 게시글 ID: {}", post.getId());
+                post.getThumbnail().setBase64(null);
+            }
+        }
+    }
+
+    // 이미지 파일을 Base64로 변환하는 메서드
+    public String convertImageToBase64(String imagePath) throws IOException {
+        Path path = Paths.get(imagePath);
+
+        if (!Files.exists(path)) {
+            return null;
+        }
+
+        byte[] imageBytes = Files.readAllBytes(path);
+        String base64 = Base64.getEncoder().encodeToString(imageBytes);
+
+        // MIME 타입 추출
+        String mimeType = Files.probeContentType(path);
+        if (mimeType == null) {
+            // 확장자로 MIME 타입 추정
+            String fileName = path.getFileName().toString().toLowerCase();
+            if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
+                mimeType = "image/jpeg";
+            } else if (fileName.endsWith(".png")) {
+                mimeType = "image/png";
+            } else if (fileName.endsWith(".gif")) {
+                mimeType = "image/gif";
+            } else {
+                mimeType = "image/jpeg"; // 기본값
+            }
+        }
+
+        return "data:" + mimeType + ";base64," + base64;
     }
 
 }
