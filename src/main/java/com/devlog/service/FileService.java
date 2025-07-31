@@ -22,7 +22,6 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * @author sbsong
@@ -40,7 +39,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional
 public class FileService {
-    private static final Logger logger = LoggerFactory.getLogger(PostService.class);
+    private static final Logger log = LoggerFactory.getLogger(FileService.class);
     private final FileRepository fileRepository;
 
     @Value("${file.upload-dir}")
@@ -52,10 +51,10 @@ public class FileService {
             Path uploadPath = Paths.get(uploadDir);
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
-                System.out.println("업로드 디렉토리 생성: " + uploadPath.toAbsolutePath());
+                log.info("업로드 디렉토리 생성:{}", uploadPath.toAbsolutePath());
             }
         } catch (IOException e) {
-            throw new RuntimeException("업로드 디렉토리 생성 실패: " + uploadDir, e);
+            throw new IllegalArgumentException("업로드 디렉토리 생성 실패: " + uploadDir, e);
         }
     }
 
@@ -65,7 +64,14 @@ public class FileService {
     }
 
     public File uploadFile(MultipartFile file, FileType fileType, Post post) {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("업로드 할 파일이 없습니다.");
+        }
+
         String originFileName = file.getOriginalFilename();
+        if (originFileName == null || originFileName.trim().isEmpty()) {
+            throw new IllegalArgumentException("파일명이 존재하지 않습니다.");
+        }
         String ext = getExtension(originFileName);
         String storedFileName = UUID.randomUUID() + "." + ext; // 저장 파일명은 랜덤값으로 조합
         String fullPath = Paths.get(uploadDir, storedFileName).toString();
@@ -73,7 +79,7 @@ public class FileService {
         try {
             file.transferTo(new java.io.File(fullPath));
         } catch (IOException e) {
-            throw new RuntimeException("파일 저장 실패", e);
+            throw new IllegalArgumentException("파일 저장 실패", e);
         }
 
         File entity = File.builder()
@@ -85,7 +91,6 @@ public class FileService {
             .fileType(fileType)
             .post(post)
             .build();
-
         return fileRepository.save(entity);
 
     }
@@ -96,12 +101,14 @@ public class FileService {
         }
         return files.stream()
             .map(file -> uploadFile(file, fileType, post))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private String getExtension(String fileName) {
-        int dotIndex = fileName.lastIndexOf('.');
-        return dotIndex == -1 ? "" : fileName.substring(dotIndex + 1);
+        if (fileName == null || !fileName.contains(".")) {
+            throw new IllegalArgumentException("확장자가 없는 파일입니다.");
+        }
+        return fileName.substring(fileName.lastIndexOf('.') + 1);
     }
 
 
@@ -113,7 +120,7 @@ public class FileService {
                 post.getThumbnail().setBase64(base64);
                 post.hasThumbnail();
             } catch (IOException e) {
-                logger.warn("썸네일 로드 실패 - 게시글 ID: {}", post.getId());
+                log.warn("썸네일 로드 실패 - 게시글 ID: {}", post.getId());
                 post.getThumbnail().setBase64(null);
             }
         }
