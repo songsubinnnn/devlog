@@ -201,6 +201,31 @@ textarea.form-input {
   margin-top: 3rem;
   padding-top: 2rem;
   border-top: 1px solid #e2e8f0;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.list-btn {
+  background: #f3f4f6;
+  color: #374151;
+  border: 2px solid #e5e7eb;
+  padding: 1rem 2.5rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.list-btn:hover {
+  background: #e5e7eb;
+  border-color: #d1d5db;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
 .submit-btn {
@@ -235,8 +260,9 @@ textarea.form-input {
 }
 
 .submit-btn:hover {
+  background: #374151;
   transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(72, 187, 120, 0.4);
+  box-shadow: 0 10px 25px rgba(17, 24, 39, 0.3);
 }
 
 .submit-btn:active {
@@ -281,6 +307,16 @@ textarea.form-input {
 
   .form-input {
     padding: 0.875rem 1rem;
+  }
+
+  .submit-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .list-btn, .submit-btn {
+    width: 100%;
+    max-width: 300px;
   }
 }
 

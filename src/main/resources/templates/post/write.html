@@ -79,6 +79,9 @@
       </div>
 
       <div class="submit-container">
+        <button type="button" class="list-btn" onclick="goToList()">
+          📋 목록
+        </button>
         <button type="submit" class="submit-btn" id="submitBtn">
           <span th:text="${isEdit}? '수정하기' : '게시하기'">게시하기</span>
         </button>
@@ -92,6 +95,12 @@
 </script>
 
 <script>
+  // 목록 페이지로 이동
+  function goToList() {
+    window.location.href = '/posts';
+  }
+
+  // 파일 추가
   function addFileInput() {
     const container = document.getElementById("fileInputs");
     const fileInputDiv = document.createElement("div");
@@ -155,6 +164,8 @@
       submitBtn.disabled = true;
       submitBtn.innerHTML = '처리중...';
     });
+
+
   });
 </script>
 </body>

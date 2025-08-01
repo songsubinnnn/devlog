@@ -4,78 +4,390 @@
   <meta charset="UTF-8"/>
   <title>HOME</title>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <!-- Tailwind CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 font-sans">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-<div class="container mx-auto px-4 py-8 max-w-7xl">
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #f8fafc;
+      min-height: 100vh;
+      line-height: 1.6;
+      color: #1f2937;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    /* 헤더 스타일 */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3rem;
+      padding: 1.5rem 0;
+    }
+
+    .header h2 {
+      font-size: 2.5rem;
+      font-weight: 500;
+      color: #111827;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .header h2::before {
+      /*content: "📝";*/
+      font-size: 2rem;
+    }
+
+    .write-btn {
+      background: #111827;
+      color: white;
+      padding: 0.875rem 1.75rem;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: none;
+      cursor: pointer;
+    }
+
+    .write-btn::before {
+      content: "✏️";
+    }
+
+    .write-btn:hover {
+      background: #374151;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(17, 24, 39, 0.3);
+    }
+
+    /* 카드 그리드 */
+    .post-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-bottom: 4rem;
+    }
+
+    .post-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      transition: all 0.3s ease;
+      border: 1px solid #f3f4f6;
+      position: relative;
+    }
+
+    .post-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      border-color: #e5e7eb;
+    }
+
+    .post-card a {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .post-thumbnail {
+      position: relative;
+      height: 200px;
+      background: #f3f4f6;
+      overflow: hidden;
+    }
+
+    .post-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .post-card:hover .post-thumbnail img {
+      transform: scale(1.05);
+    }
+
+    .no-thumbnail {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+      color: #0d2c61;
+      font-size: 3rem;
+    }
+
+    .post-content {
+      padding: 1.5rem;
+    }
+
+    .post-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #111827;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .post-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #6b7280;
+      font-size: 0.875rem;
+    }
+
+    .post-date {
+      background: #f3f4f6;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+
+    .post-author {
+      font-weight: 600;
+      color: #374151;
+    }
+
+    /* 페이지네이션 */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 3rem;
+    }
+
+    .pagination a,
+    .pagination span {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      min-width: 44px;
+      text-align: center;
+      border: 2px solid #e5e7eb;
+      background: white;
+    }
+
+    .pagination a {
+      color: #374151;
+    }
+
+    .pagination a:hover {
+      background: #f3f4f6;
+      border-color: #d1d5db;
+      transform: translateY(-2px);
+    }
+
+    .pagination .current {
+      background: #111827;
+      color: white;
+      border-color: #111827;
+    }
+
+    .pagination .disabled {
+      color: #9ca3af;
+      cursor: not-allowed;
+      background: #f9fafb;
+    }
+
+    .pagination .disabled:hover {
+      transform: none;
+      background: #f9fafb;
+      border-color: #e5e7eb;
+    }
+
+    /* 빈 상태 */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: #6b7280;
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .empty-state-text {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .empty-state-subtext {
+      font-size: 1rem;
+      color: #9ca3af;
+    }
+
+    /* 반응형 디자인 */
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
+      .header {
+        flex-direction: column;
+        gap: 1.5rem;
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .header h2 {
+        font-size: 2rem;
+      }
+
+      .post-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .post-card {
+        margin: 0 0.5rem;
+      }
+
+      .pagination {
+        flex-wrap: wrap;
+        gap: 0.25rem;
+      }
+
+      .pagination a,
+      .pagination span {
+        padding: 0.5rem 0.75rem;
+        min-width: 40px;
+        font-size: 0.875rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .post-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .post-card {
+        margin: 0;
+      }
+
+      .post-content {
+        padding: 1rem;
+      }
+
+      .pagination a,
+      .pagination span {
+        padding: 0.5rem;
+        min-width: 36px;
+        font-size: 0.8rem;
+      }
+    }
+
+    /* 로딩 애니메이션 */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .post-card {
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    .post-card:nth-child(1) { animation-delay: 0.1s; }
+    .post-card:nth-child(2) { animation-delay: 0.2s; }
+    .post-card:nth-child(3) { animation-delay: 0.3s; }
+    .post-card:nth-child(4) { animation-delay: 0.4s; }
+    .post-card:nth-child(5) { animation-delay: 0.5s; }
+    .post-card:nth-child(6) { animation-delay: 0.6s; }
+  </style>
+</head>
+<body>
+<div class="container">
   <!-- 상단 헤더 -->
-  <div class="flex justify-between items-center mb-8">
-    <h2 class="text-2xl font-semibold flex items-center text-gray-900">
-      <i class="fa-solid fa-rectangle-list mr-2"></i>DevLog
-    </h2>
-    <a href="/posts/write"
-       class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition flex items-center">
-      <i class="fa-solid fa-pen-to-square mr-1"></i>글쓰기
-    </a>
+  <div class="header">
+    <h2>DevLog</h2>
+    <a href="/posts/write" class="write-btn">글쓰기</a>
   </div>
 
-  <!-- 카드 리스트: grid + gap -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    <div th:each="post : ${postList}" class="bg-white rounded-lg shadow hover:shadow-lg transition p-6">
-      <a th:href="@{'/posts/' + ${post.id}}" class="block">
-        <div class="relative h-48 bg-gray-200">
+  <!-- 카드 리스트 -->
+  <div class="post-grid">
+    <div th:each="post : ${postList}" class="post-card">
+      <a th:href="@{'/posts/' + ${post.id}}">
+        <div class="post-thumbnail">
           <!-- Base64 이미지 표시 -->
           <img th:if="${post.hasThumbnail()}"
                th:src="${post.thumbnail.base64}"
-               th:alt="${post.title}"
-               class="w-full h-full object-cover">
+               >
 
-          <!-- 썸네일이 없을 때 기본 이미지 -->
-          <div th:unless="${post.hasThumbnail()}"
-               class="w-full h-full flex items-center justify-center bg-gray-100">
-            <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
-              </path>
-            </svg>
+          <!-- 썸네일이 없을 때 기본 아이콘 -->
+          <div th:unless="${post.hasThumbnail()}" class="no-thumbnail">
+            📄
           </div>
         </div>
-        <h5 class="text-lg font-semibold mb-2 text-gray-900" th:text="${post.title}">제목</h5>
-        <p class="text-sm text-gray-500 mb-1" th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}">날짜</p>
-        <p class="text-sm text-gray-500 mb-1" th:text="${post.authorNickname}">글쓴이</p>
+
+        <div class="post-content">
+          <h5 class="post-title" th:text="${post.title}">제목</h5>
+          <div class="post-meta">
+            <span class="post-date" th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}">날짜</span>
+            <span class="post-author" th:text="${post.authorNickname}">글쓴이</span>
+          </div>
+        </div>
       </a>
     </div>
   </div>
 
   <!-- 페이징 -->
-  <nav th:if="${postList.totalElements > 0}" class="flex justify-center mt-8 space-x-2" aria-label="Pagination">
+  <nav th:if="${postList.totalElements > 0}" class="pagination" aria-label="Pagination">
     <!-- 이전 -->
     <a th:if="${postList.hasPrevious()}"
-       th:href="@{/posts(page=${postList.number - 1}, size=${postList.size})}"
-       class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-200">이전</a>
-    <span th:if="${!postList.hasPrevious()}"
-          class="px-3 py-1 rounded border border-gray-300 text-gray-400 cursor-not-allowed">이전</span>
+       th:href="@{/posts(page=${postList.number - 1}, size=${postList.size})}">이전</a>
+    <span th:if="${!postList.hasPrevious()}" class="disabled">이전</span>
 
     <!-- 숫자 버튼 -->
     <a th:each="i : ${#numbers.sequence(0, postList.totalPages - 1)}"
        th:href="@{/posts(page=${i}, size=${postList.size})}"
        th:text="${i + 1}"
-       th:classappend="${i == postList.number} ? 'bg-blue-600 text-white border-blue-600' : 'border-gray-300 text-gray-700 hover:bg-gray-200'"
-       class="px-3 py-1 rounded border cursor-pointer"></a>
+       th:class="${i == postList.number} ? 'current' : ''"></a>
 
     <!-- 다음 -->
     <a th:if="${postList.hasNext()}"
-       th:href="@{/posts(page=${postList.number + 1}, size=${postList.size})}"
-       class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-200">다음</a>
-    <span th:if="${!postList.hasNext()}"
-          class="px-3 py-1 rounded border border-gray-300 text-gray-400 cursor-not-allowed">다음</span>
+       th:href="@{/posts(page=${postList.number + 1}, size=${postList.size})}">다음</a>
+    <span th:if="${!postList.hasNext()}" class="disabled">다음</span>
   </nav>
-  <div th:if="${postList.totalElements == 0}" class="text-center text-gray-500 mt-12">
-    작성된 게시글이 없습니다.
+
+  <!-- 빈 상태 -->
+  <div th:if="${postList.totalElements == 0}" class="empty-state">
+    <div class="empty-state-icon">📝</div>
+    <div class="empty-state-text">아직 작성된 게시글이 없어요</div>
+    <div class="empty-state-subtext">첫 번째 게시글을 작성해보세요!</div>
   </div>
 </div>
-
 </body>
 </html>
