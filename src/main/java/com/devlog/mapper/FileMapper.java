@@ -30,6 +30,7 @@ public class FileMapper {
 
     public FileResponse toResponse(File fileEntity) {
         return FileResponse.builder()
+            .id(fileEntity.getId())
             .originalFileName(fileEntity.getOriginalFileName())
             .storedFileName(fileEntity.getStoredFileName())
             .fileUrl(fileEntity.getFileUrl())

@@ -71,7 +71,7 @@ public class PostService {
         // 게시글
         Post postEntity = postRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
-       // 파일
+        // 파일
         List<File> files = fileService.getFiles(id);
 
         // 파일을 thumbnail, attachments로 분류하여 DTO 변환 -> 서비스단
@@ -98,34 +98,49 @@ public class PostService {
             dto.setTitle(proj.getTitle());
             dto.setCreatedAt(proj.getCreatedAt());
             dto.setAuthorNickname(proj.getAuthorNickname());
+
             // 썸네일 객체 직접 생성 후 설정
+            if(proj.getFilePath()!= null && !proj.getFilePath().isEmpty()) {
             FileResponse thumbnail = new FileResponse();
             thumbnail.setFilePath(proj.getFilePath());
             dto.setThumbnail(thumbnail);
-
             fileService.loadThumbnailBase64(dto);
+            }
+
             return dto;
         });
     }
 
-    /**
-     * Update post post response.
-     *
-     * @param id      the id
-     * @param request the request
-     * @return the post response
-     */
+
     @Transactional
-    public PostResponse updatePost(Long id, PostRequest request) {
-        Post entity = postRepository.findById(id)
+    public PostResponse updatePost(Long id, MultipartFile thumbnail, List<MultipartFile> attachments, String deletedFilesId, PostRequest request) {
+        Post post = postRepository.findById(id)
             .orElseThrow(() -> new RuntimeException(("게시글이 존재하지 않습니다.")));
 
         List<Tag> tagList = tagService.findOrCreateByNames(request.getTags());
 
-        // TODO 파일 업데이트 수정
-        //  entity.update(request.getTitle(), request.getContent(), request.getThumbnail(), tagList);
+        post.update(request.getTitle(), request.getContent(), tagList);
 
-        return postMapper.toResponse(entity);
+        // 파일 삭제 처리
+        if (deletedFilesId != null && !deletedFilesId.isEmpty()) {
+            fileService.markAsDeleted(deletedFilesId);
+        }
+
+        // 파일 업로드
+        if (thumbnail != null && !thumbnail.isEmpty()) {
+            fileService.uploadFile(thumbnail, FileType.THUMBNAIL, post);
+        }
+
+        if (attachments != null) {
+            List<MultipartFile> resultList = attachments.stream()
+                .filter(file -> file != null && !file.isEmpty())
+                .toList();
+            if (!resultList.isEmpty()) {
+                fileService.uploadMultipleFiles(attachments, FileType.ATTACHMENT, post);
+            }
+        }
+
+        return postMapper.toResponse(post);
     }
 
     /**

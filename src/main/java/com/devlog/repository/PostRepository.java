@@ -34,6 +34,7 @@ public interface PostRepository extends JpaRepository<Post,Long> {
             LEFT JOIN File f ON f.post.id = p.id
             JOIN p.author u
             WHERE p.isDeleted = false
+            AND f.fileType = 'THUMBNAIL'
         """,
         countQuery = """
                     SELECT count(p)

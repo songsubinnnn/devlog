@@ -48,7 +48,7 @@ public class PostController {
     @GetMapping
     public String getPostList(Model model, @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         Page<PostResponse> postList = postService.getAllPosts(pageable);
-
+        //TODO 리스트 표출 시 지워진 썸네일도 나옴
         model.addAttribute("postList", postList);
         return "post/list"; // templates/post/list.html
     }
@@ -112,8 +112,8 @@ public class PostController {
      * @return the response entity
      */
     @PutMapping("/{id}")
-    public String updatePost(@PathVariable Long id, @ModelAttribute PostRequest request) {
-        PostResponse updatedPost = postService.updatePost(id, request);
+    public String updatePost(@PathVariable Long id, MultipartFile thumbnail, List<MultipartFile> attachments, @RequestParam String deletedFilesId, @ModelAttribute PostRequest request) {
+        postService.updatePost(id, thumbnail, attachments, deletedFilesId, request);
         return "redirect:/posts/" + id;
     }
 

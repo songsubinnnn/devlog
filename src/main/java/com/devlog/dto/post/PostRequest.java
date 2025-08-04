@@ -1,8 +1,8 @@
 package com.devlog.dto.post;
 
-import com.devlog.dto.file.FileResponse;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -30,6 +30,6 @@ public class PostRequest { // client -> server 보내는 요청데이터를 DTO�
     @NotBlank(message = "내용은 필수값입니다.")
     private String content;
     private List<String> tags; // 클라이언트는 태그 이름만 보냄
-    private FileResponse thumbnail;
-    private List<FileResponse> attachments; // 첨부파일
+    private MultipartFile thumbnail;
+    private List<MultipartFile> attachments; // 첨부파일
 }

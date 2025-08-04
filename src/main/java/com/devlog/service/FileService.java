@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
@@ -61,6 +62,18 @@ public class FileService {
     public List<File> getFiles(Long id) { // 서비스에서 엔티티 -> dto 변환
         return fileRepository.findByPostIdAndIsDeletedFalse(id);
 
+    }
+
+    public void markAsDeleted(String deletedFilesId) {
+        // 삭제된 파일 처리
+        String[] deletedFilesIdArr = deletedFilesId.split(",");
+        for(String fileId : deletedFilesIdArr) {
+                fileRepository.findById(Long.valueOf(fileId)).ifPresent(file -> {
+                    file.setIsDeleted(true);
+                    file.setDeletedAt(LocalDateTime.now());
+                    fileRepository.save(file);
+                });
+        }
     }
 
     public File uploadFile(MultipartFile file, FileType fileType, Post post) {

@@ -13,10 +13,10 @@
   </div>
 
   <div class="form-container">
-    <form id="postForm" th:action="${isEdit} ? @{/posts/{id}(id=${postDTO.id})} : @{/posts}"
-          enctype="multipart/form-data" th:object="${postDTO}" method="post">
-
+    <form id="postForm" th:action="${isEdit} ? @{/posts/{id}(id=${postDTO.id})} : @{/posts}" enctype="multipart/form-data" th:object="${postDTO}" method="post">
       <input type="hidden" id="id" name="id" th:value="${postDTO.id}"/>
+      <input type="hidden" id="deletedFilesId" name="deletedFilesId"/>
+      <input type="hidden" name="_method" th:value="${isEdit} ? 'put' : ''"/>
 
       <div class="form-group">
         <label for="title">📝 제목</label>
@@ -38,9 +38,24 @@
 
       <div class="form-group">
         <label for="thumbnail">🖼️ 썸네일 이미지</label>
+        <!-- 기존 썸네일 파일들 -->
+        <div id="existingThumbnailFiles" class="existing-files-container">
+          <div th:if="${postDTO.thumbnail != null}" class="existing-file-item" th:data-file-id="${postDTO.thumbnail.id}">
+            <div class="file-info">
+              <span class="file-icon">🖼️</span>
+              <a th:href="@{/files/{id}(id=${postDTO.thumbnail.id})}"
+                 th:text="${postDTO.thumbnail.originalFileName}"
+                 class="file-link">파일명</a>
+            </div>
+            <button type="button" class="delete-existing-file-btn" th:data-file-id="${postDTO.thumbnail.id}">
+              🗑️ 삭제
+            </button>
+          </div>
+        </div>
+        <!-- 새로 선택된 썸네일 파일들 -->
+        <div id="newThumbnailFiles" class="new-files-container"></div>
         <div class="file-input-container">
-          <input type="file" id="thumbnail" th:field="${postDTO.thumbnail}"
-                 class="file-input" accept="image/*">
+          <input type="file" id="thumbnail" name="thumbnail" class="file-input" accept="image/*">
           <label for="thumbnail" class="file-label">
             썸네일 이미지를 선택해주세요
           </label>
@@ -49,6 +64,22 @@
 
       <div class="form-group">
         <label>📎 첨부파일</label>
+        <!-- 기존 첨부파일들 -->
+        <div id="existingAttachmentFiles" class="existing-files-container">
+          <div th:each="file : ${postDTO.attachments}" class="existing-file-item" th:data-file-id="${file.id}">
+            <div class="file-info">
+              <span class="file-icon">📎</span>
+              <a th:href="@{/files/{id}(id=${file.id})}"
+                 th:text="${file.originalFileName}"
+                 class="file-link">파일명</a>
+            </div>
+            <button type="button" class="delete-existing-file-btn" th:data-file-id="${file.id}">
+              🗑️ 삭제
+            </button>
+          </div>
+        </div>
+        <!-- 새로 선택된 첨부파일들 -->
+        <div id="newAttachmentFiles" class="new-files-container"></div>
         <div id="fileInputs" class="file-inputs-container">
           <div class="file-input-container">
             <input type="file" id="attachments" name="attachments" class="file-input">
@@ -60,22 +91,6 @@
         <button type="button" class="add-file-btn" onclick="addFileInput()">
           ➕ 파일 추가
         </button>
-      </div>
-
-      <!-- 기존 첨부파일 표시 -->
-      <div th:if="${postDTO.attachments != null}" class="form-group">
-        <label>📋 기존 첨부파일</label>
-        <div class="existing-files">
-          <div th:each="file : ${postDTO.attachments}" class="file-item">
-            <a th:href="@{/files/{id}(id=${file.id})}"
-               th:text="${file.originalFileName}"
-               class="file-link">파일명</a>
-            <div class="delete-checkbox">
-              <input type="checkbox" name="deleteFileIds" th:value="${file.id}" th:id="'delete-' + ${file.id}">
-              <label th:for="'delete-' + ${file.id}">🗑️ 삭제</label>
-            </div>
-          </div>
-        </div>
       </div>
 
       <div class="submit-container">
@@ -95,6 +110,9 @@
 </script>
 
 <script>
+  let fileCounter = 0;
+  const deletedFilesId = [];
+
   // 목록 페이지로 이동
   function goToList() {
     window.location.href = '/posts';
@@ -117,7 +135,7 @@
     label.style.cursor = "pointer";
 
     // 고유 ID 생성
-    const uniqueId = 'file-' + Date.now();
+    const uniqueId = 'file-' + Date.now() + '-' + (++fileCounter);
     input.id = uniqueId;
     label.setAttribute('for', uniqueId);
 
@@ -129,29 +147,125 @@
     fileInputDiv.appendChild(fileContainer);
     container.appendChild(fileInputDiv);
 
-    // 파일 선택 시 레이블 업데이트
-    input.addEventListener('change', function() {
+    // 파일 선택 시 새 파일 div 생성
+    input.addEventListener('change', function () {
       if (this.files && this.files[0]) {
-        label.textContent = '📎 ' + this.files[0].name;
-        label.style.color = '#667eea';
+        createNewFileDiv(this.files[0], 'attachments', uniqueId);
       }
     });
   }
 
-  // 기존 파일 입력에도 동일한 기능 추가
-  document.addEventListener('DOMContentLoaded', function() {
-    const fileInputs = document.querySelectorAll('input[type="file"]');
-    fileInputs.forEach(input => {
-      input.addEventListener('change', function() {
-        const label = document.querySelector(`label[for="${this.id}"]`);
-        if (label && this.files && this.files[0]) {
-          if (this.id === 'thumbnail') {
-            label.textContent = '🖼️ ' + this.files[0].name;
-          } else {
-            label.textContent = '📎 ' + this.files[0].name;
-          }
-          label.style.color = '#667eea';
+  // 새로운 파일 div 생성
+  function createNewFileDiv(file, type, inputId) {
+    const container = type === 'thumbnail' ?
+      document.getElementById('newThumbnailFiles') :
+      document.getElementById('newAttachmentFiles');
+
+    const fileDiv = document.createElement('div');
+    fileDiv.className = 'new-file-item';
+    fileDiv.setAttribute('data-input-id', inputId);
+
+    const fileInfo = document.createElement('div');
+    fileInfo.className = 'file-info';
+
+    const fileIcon = document.createElement('span');
+    fileIcon.className = 'file-icon';
+    fileIcon.textContent = type === 'thumbnail' ? '🖼️' : '📎';
+
+    const fileName = document.createElement('span');
+    fileName.className = 'file-name';
+    fileName.textContent = file.name;
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.type = 'button';
+    deleteBtn.className = 'delete-new-file-btn';
+    deleteBtn.textContent = '🗑️ 삭제';
+    deleteBtn.setAttribute('data-input-id', inputId);
+
+    fileInfo.appendChild(fileIcon);
+    fileInfo.appendChild(fileName);
+    fileDiv.appendChild(fileInfo);
+    fileDiv.appendChild(deleteBtn);
+
+    container.appendChild(fileDiv);
+
+    // 삭제 버튼 이벤트 리스너
+    deleteBtn.addEventListener('click', function() {
+      removeNewFile(inputId);
+    });
+  }
+
+  // 새로운 파일 삭제
+  function removeNewFile(inputId) {
+    // 파일 div 제거
+    const thumbnailDiv = document.querySelector(`#newThumbnailFiles .new-file-item[data-input-id="${inputId}"]`);
+    const attachmentDiv = document.querySelector(`#newAttachmentFiles .new-file-item[data-input-id="${inputId}"]`);
+
+    if (thumbnailDiv) thumbnailDiv.remove();
+    if (attachmentDiv) attachmentDiv.remove();
+
+    // 해당 input 초기화
+    const input = document.getElementById(inputId);
+    if (input) {
+      input.value = '';
+      const label = input.nextElementSibling;
+      if (label) {
+        if (input.id === 'thumbnail') {
+          label.textContent = '썸네일 이미지를 선택해주세요';
+        } else if (input.id === 'attachments') {
+          label.textContent = '파일을 선택하거나 드래그하여 업로드하세요';
+        } else {
+          label.textContent = '추가 파일을 선택해주세요';
         }
+        label.style.color = '';
+      }
+    }
+  }
+
+  // 기존 파일 삭제
+  function removeExistingFile(fileId) {
+    if (!deletedFilesId.includes(fileId)) {
+      deletedFilesId.push(fileId);
+      document.getElementById('deletedFilesId').value = deletedFilesId.join(',');
+    }
+
+    const fileItem = document.querySelector(`.existing-file-item[data-file-id="${fileId}"]`);
+    if (fileItem) {
+      fileItem.remove();
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    // 썸네일 파일 입력 처리
+    const thumbnailInput = document.getElementById('thumbnail');
+    if (thumbnailInput) {
+      thumbnailInput.addEventListener('change', function() {
+        // 기존 새 파일 div들 제거
+        const newThumbnailContainer = document.getElementById('newThumbnailFiles');
+        newThumbnailContainer.innerHTML = '';
+
+        if (this.files && this.files[0]) {
+          createNewFileDiv(this.files[0], 'thumbnail', this.id);
+        }
+      });
+    }
+
+    // 첨부파일 입력 처리
+    const attachmentsInput = document.getElementById('attachments');
+    if (attachmentsInput) {
+      attachmentsInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+          createNewFileDiv(this.files[0], 'attachments', this.id);
+        }
+      });
+    }
+
+    // 기존 파일 삭제 버튼 이벤트 리스너
+    const deleteExistingBtns = document.querySelectorAll('.delete-existing-file-btn');
+    deleteExistingBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const fileId = this.getAttribute('data-file-id');
+        removeExistingFile(fileId);
       });
     });
 
@@ -159,13 +273,11 @@
     const form = document.getElementById('postForm');
     const submitBtn = document.getElementById('submitBtn');
 
-    form.addEventListener('submit', function() {
+    form.addEventListener('submit', function () {
       submitBtn.classList.add('loading');
       submitBtn.disabled = true;
       submitBtn.innerHTML = '처리중...';
     });
-
-
   });
 </script>
 </body>
