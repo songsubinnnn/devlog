@@ -31,10 +31,9 @@ public interface PostRepository extends JpaRepository<Post,Long> {
             SELECT new com.devlog.dto.post.PostWithThumbnailProjection(
                                                    p.id, p.title, p.content, f.filePath, u.nickname, p.createdAt)
             FROM Post p
-            LEFT JOIN File f ON f.post.id = p.id
+            LEFT JOIN File f ON f.post.id = p.id AND f.fileType = 'THUMBNAIL' AND f.isDeleted = false
             JOIN p.author u
             WHERE p.isDeleted = false
-            AND f.fileType = 'THUMBNAIL'
         """,
         countQuery = """
                     SELECT count(p)

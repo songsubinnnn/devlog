@@ -93,6 +93,31 @@ textarea.form-input {
   font-family: inherit;
 }
 
+/* 글 상세 화면용 컨텐츠 표시 스타일 */
+.content-display {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 1rem;
+  background: #f8f9fa;
+  color: #495057;
+  min-height: 20px;
+  line-height: 1.6;
+}
+
+.content-body {
+  min-height: 200px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.tag-item {
+  color: #374151;
+  font-weight: 500;
+  margin-right: 8px;
+}
+
 .file-input-container {
   position: relative;
   overflow: hidden;
@@ -307,6 +332,38 @@ textarea.form-input {
   overflow: hidden;
 }
 
+/* 상세 화면용 수정/삭제 버튼 스타일 - 모던한 스타일 */
+.submit-btn.edit-btn {
+  background: #6b7280;
+  border: 2px solid #9ca3af;
+  color: #374151;
+  background: #f9fafb;
+  font-weight: 600;
+}
+
+.submit-btn.edit-btn:hover {
+  background: #f3f4f6;
+  border-color: #6b7280;
+  color: #111827;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(107, 114, 128, 0.15);
+}
+
+.submit-btn.delete-btn {
+  background: #fef2f2;
+  border: 2px solid #fecaca;
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.submit-btn.delete-btn:hover {
+  background: #fee2e2;
+  border-color: #f87171;
+  color: #b91c1c;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+}
+
 .submit-btn::before {
   content: '';
   position: absolute;
@@ -323,9 +380,13 @@ textarea.form-input {
 }
 
 .submit-btn:hover {
+  transform: translateY(-1px);
+}
+
+.submit-btn:not(.edit-btn):not(.delete-btn):hover {
   background: #374151;
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(17, 24, 39, 0.3);
+  box-shadow: 0 6px 16px rgba(17, 24, 39, 0.2);
+  transform: translateY(-2px);
 }
 
 .submit-btn:active {
@@ -368,7 +429,7 @@ textarea.form-input {
     padding: 1.5rem;
   }
 
-  .form-input {
+  .form-input, .content-display {
     padding: 0.875rem 1rem;
   }
 

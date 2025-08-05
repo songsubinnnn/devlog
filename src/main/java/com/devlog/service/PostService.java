@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The type Post service.
@@ -71,10 +72,15 @@ public class PostService {
         // 게시글
         Post postEntity = postRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
-        // 파일
-        List<File> files = fileService.getFiles(id);
+
+        // 태그
+        List<String> tagNames = postEntity.getPostTags().stream()
+            .map(postTag -> postTag.getTag().getName())
+            .collect(Collectors.toList());
 
         // 파일을 thumbnail, attachments로 분류하여 DTO 변환 -> 서비스단
+        List<File> files = fileService.getFiles(id);
+
         // 썸네일 (단일)
         File thumbnail = files.stream()
             .filter(f -> f.getFileType() == FileType.THUMBNAIL)
@@ -86,7 +92,7 @@ public class PostService {
             .filter(f -> f.getFileType() == FileType.ATTACHMENT)
             .toList();
 
-        return postMapper.toPostDetailResponse(postEntity, thumbnail, attachments);
+        return postMapper.toPostDetailResponse(postEntity, thumbnail, attachments,tagNames);
     }
 
 
@@ -100,11 +106,11 @@ public class PostService {
             dto.setAuthorNickname(proj.getAuthorNickname());
 
             // 썸네일 객체 직접 생성 후 설정
-            if(proj.getFilePath()!= null && !proj.getFilePath().isEmpty()) {
-            FileResponse thumbnail = new FileResponse();
-            thumbnail.setFilePath(proj.getFilePath());
-            dto.setThumbnail(thumbnail);
-            fileService.loadThumbnailBase64(dto);
+            if (proj.getFilePath() != null && !proj.getFilePath().isEmpty()) {
+                FileResponse thumbnail = new FileResponse();
+                thumbnail.setFilePath(proj.getFilePath());
+                dto.setThumbnail(thumbnail);
+                fileService.loadThumbnailBase64(dto);
             }
 
             return dto;

@@ -62,7 +62,7 @@ public class PostMapper {
             .build();
     }
 
-    public PostResponse toPostDetailResponse(Post post, File thumbnail, List<File> attachments) {
+    public PostResponse toPostDetailResponse(Post post, File thumbnail, List<File> attachments, List<String> tagNames) {
         return PostResponse.builder()
             .id(post.getId())
             .title(post.getTitle())
@@ -74,6 +74,7 @@ public class PostMapper {
             .attachments(attachments != null ? attachments.stream()
                 .map(fileMapper::toResponse)
                 .collect(Collectors.toList()) : Collections.emptyList())
+            .tags(tagNames)
             .build();
     }
 }
