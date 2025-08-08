@@ -59,7 +59,7 @@ public class FileService {
         }
     }
 
-    public List<File> getFiles(Long id) { // 서비스에서 엔티티 -> dto 변환
+    public List<File> findByPostId(Long id) { // 서비스에서 엔티티 -> dto 변환
         return fileRepository.findByPostIdAndIsDeletedFalse(id);
 
     }

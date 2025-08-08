@@ -111,11 +111,11 @@ public class PostController {
      * @param request the request
      * @return the response entity
      */
-    @PutMapping("/{id}")
-    public String updatePost(@PathVariable Long id, MultipartFile thumbnail, List<MultipartFile> attachments, @RequestParam String deletedFilesId, @ModelAttribute PostRequest request) {
-        postService.updatePost(id, thumbnail, attachments, deletedFilesId, request);
-        return "redirect:/posts/" + id;
-    }
+//    @PutMapping("/{id}")
+//    public String updatePost(@PathVariable Long id, MultipartFile thumbnail, List<MultipartFile> attachments, @RequestParam String deletedFilesId, @ModelAttribute PostRequest request) {
+//        postService.updatePost(id, thumbnail, attachments, deletedFilesId, request);
+//        return "redirect:/posts/" + id;
+//    }
 
     /**
      * 상세
