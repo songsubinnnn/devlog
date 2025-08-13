@@ -22,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * The type Post service.
@@ -77,7 +76,7 @@ public class PostService {
         // 태그
         List<String> tagNames = postEntity.getPostTags().stream()
             .map(postTag -> postTag.getTag().getName())
-            .collect(Collectors.toList());
+            .toList();
 
         // 파일을 thumbnail, attachments로 분류하여 DTO 변환 -> 서비스단
         List<File> files = fileService.findByPostId(id);
@@ -127,8 +126,7 @@ public class PostService {
         List<Tag> tagList = tagService.findOrCreateByNames(request.getTags());
 
 
-
-        // 파일 삭제 처리
+        // 삭제 요청 파일 처리
         if (deletedFilesId != null && !deletedFilesId.isEmpty()) {
             fileService.markAsDeleted(deletedFilesId);
         }
@@ -136,13 +134,15 @@ public class PostService {
         // 기존 파일 유지
         List<File> originAttachments = fileService.findByPostId(id).stream()
             .filter(f -> existingAttachmentsId.contains(f.getId()))
-            .collect(Collectors.toList());
+            .toList();
 
-        // 새 파일 업로드
+        // 새 파일 업로드 - 썸네일
+        File uploadedThumbnail = null;
         if (thumbnail != null && !thumbnail.isEmpty()) {
-            fileService.uploadFile(thumbnail, FileType.THUMBNAIL, post);
+            uploadedThumbnail = fileService.uploadFile(thumbnail, FileType.THUMBNAIL, post);
         }
 
+        // 새 파일 업로드 - 첨부파일
         List<File> uploadedAttachments = new ArrayList<>();
         if (attachments != null) {
             List<MultipartFile> resultList = attachments.stream()
@@ -153,23 +153,18 @@ public class PostService {
             }
         }
 
-        // 최종 첨부파일 리스트 조합
-        List<File> finalAttachments = new ArrayList<>();
-        finalAttachments.addAll(originAttachments);
-        finalAttachments.addAll(uploadedAttachments);
-
         // post에 다시 설정
-        post.setFiles(finalAttachments);
+        post.getFiles().clear();
+        post.getFiles().add(uploadedThumbnail);
+        post.getFiles().addAll(originAttachments);
+        post.getFiles().addAll(uploadedAttachments);
 
+        // update
         post.update(request.getTitle(), request.getContent(), tagList);
         return postMapper.toResponse(post);
     }
 
-    /**
-     * Soft delete post.
-     *
-     * @param id the id
-     */
+
     @Transactional
     public void softDeletePost(Long id) {
         Post post = postRepository.findByIdAndIsDeletedFalse(id)
