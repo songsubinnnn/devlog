@@ -64,11 +64,10 @@ public class FileService {
 
     }
 
-    public void markAsDeleted(String deletedFilesId) {
+    public void markAsDeleted(List<Long> deletedFilesId) {
         // 삭제된 파일 처리
-        String[] deletedFilesIdArr = deletedFilesId.split(",");
-        for(String fileId : deletedFilesIdArr) {
-                fileRepository.findById(Long.valueOf(fileId)).ifPresent(file -> {
+        for(Long fileId : deletedFilesId) {
+                fileRepository.findById(fileId).ifPresent(file -> {
                     file.setIsDeleted(true);
                     file.setDeletedAt(LocalDateTime.now());
                     fileRepository.save(file);

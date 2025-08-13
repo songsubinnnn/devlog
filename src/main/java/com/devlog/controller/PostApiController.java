@@ -59,7 +59,7 @@ public class PostApiController {
      * @return the response entity
      */
     @PutMapping("/{id}")
-    public ResponseEntity<PostResponse> updatePost(@PathVariable Long id, @RequestParam(required = false) List<Long> existingAttachmentsId, @RequestParam(required = false) MultipartFile thumbnail, @RequestParam(required = false) List<MultipartFile> attachments, @RequestParam String deletedFilesId, @ModelAttribute PostRequest request) {
+    public ResponseEntity<PostResponse> updatePost(@PathVariable Long id, @RequestParam(required = false) List<Long> existingAttachmentsId, @RequestParam(required = false) MultipartFile thumbnail, @RequestParam(required = false) List<MultipartFile> attachments, @RequestParam List<Long> deletedFilesId, @ModelAttribute PostRequest request) {
         PostResponse response = postService.updatePost(id, existingAttachmentsId, thumbnail, attachments, deletedFilesId, request);
         return ResponseEntity.ok(response);
     }

@@ -119,48 +119,49 @@ public class PostService {
 
 
     @Transactional
-    public PostResponse updatePost(Long id, List<Long> existingAttachmentsId, MultipartFile thumbnail, List<MultipartFile> attachments, String deletedFilesId, PostRequest request) {
+    public PostResponse updatePost(Long id, List<Long> existingAttachmentsId, MultipartFile thumbnail, List<MultipartFile> attachments, List<Long> deletedFilesId, PostRequest request) {
         Post post = postRepository.findById(id)
             .orElseThrow(() -> new RuntimeException(("게시글이 존재하지 않습니다.")));
 
         List<Tag> tagList = tagService.findOrCreateByNames(request.getTags());
 
+        // 기존 파일 전체 조회
+        List<File> existingFiles = new ArrayList<>(fileService.findByPostId(id));
 
         // 삭제 요청 파일 처리
         if (deletedFilesId != null && !deletedFilesId.isEmpty()) {
             fileService.markAsDeleted(deletedFilesId);
+            existingFiles.removeIf(file -> deletedFilesId.contains(file.getId()));
         }
 
-        // 기존 파일 유지
-        List<File> originAttachments = fileService.findByPostId(id).stream()
-            .filter(f -> existingAttachmentsId.contains(f.getId()))
-            .toList();
-
-        // 새 파일 업로드 - 썸네일
-        File uploadedThumbnail = null;
-        if (thumbnail != null && !thumbnail.isEmpty()) {
-            uploadedThumbnail = fileService.uploadFile(thumbnail, FileType.THUMBNAIL, post);
+        // 썸네일 처리
+        if (thumbnail != null && !thumbnail.isEmpty()) { // 새로운 썸네일이 있는 경우
+            existingFiles.removeIf(file -> file.getFileType() == FileType.THUMBNAIL); // 기존 썸네일 제거
+            File uploadedThumbnail = fileService.uploadFile(thumbnail, FileType.THUMBNAIL, post);
+            existingFiles.add(uploadedThumbnail); // 새 썸네일 추가
         }
 
-        // 새 파일 업로드 - 첨부파일
-        List<File> uploadedAttachments = new ArrayList<>();
-        if (attachments != null) {
+        // 첨부파일 처리
+        existingFiles.removeIf(file -> file.getFileType() == FileType.ATTACHMENT && existingAttachmentsId.contains(file.getId()));
+
+        if (attachments != null) { // 새로운 첨부파일 있는 경우
             List<MultipartFile> resultList = attachments.stream()
                 .filter(file -> file != null && !file.isEmpty())
                 .toList();
-            if (!resultList.isEmpty()) {
-                uploadedAttachments = fileService.uploadMultipleFiles(attachments, FileType.ATTACHMENT, post);
+
+            if (!resultList.isEmpty()) { // 파일이 유효한 경우
+                List<File> uploadedAttachments = fileService.uploadMultipleFiles(attachments, FileType.ATTACHMENT, post);
+                existingFiles.addAll(uploadedAttachments);
             }
         }
 
         // post에 다시 설정
         post.getFiles().clear();
-        post.getFiles().add(uploadedThumbnail);
-        post.getFiles().addAll(originAttachments);
-        post.getFiles().addAll(uploadedAttachments);
+        post.getFiles().addAll(existingFiles);
 
         // update
         post.update(request.getTitle(), request.getContent(), tagList);
+
         return postMapper.toResponse(post);
     }
 
