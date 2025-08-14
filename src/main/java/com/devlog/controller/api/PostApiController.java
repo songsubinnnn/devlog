@@ -1,4 +1,4 @@
-package com.devlog.controller;
+package com.devlog.controller.api;
 
 import com.devlog.domain.user.User;
 import com.devlog.dto.post.PostRequest;
@@ -61,6 +61,7 @@ public class PostApiController {
     @PutMapping("/{id}")
     public ResponseEntity<PostResponse> updatePost(@PathVariable Long id, @RequestParam(required = false) List<Long> existingAttachmentsId, @RequestParam(required = false) MultipartFile thumbnail, @RequestParam(required = false) List<MultipartFile> attachments, @RequestParam List<Long> deletedFilesId, @ModelAttribute PostRequest request) {
         PostResponse response = postService.updatePost(id, existingAttachmentsId, thumbnail, attachments, deletedFilesId, request);
+        //TODO 예외 처리 정리
         return ResponseEntity.ok(response);
     }
 
