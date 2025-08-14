@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Error Pages</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      color: white;
+    }
+
+    .header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .header p {
+      font-size: 1rem;
+      opacity: 0.9;
+      font-weight: 400;
+    }
+
+    .error-container {
+      background: white;
+      border-radius: 12px;
+      padding: 50px 40px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      text-align: center;
+      position: relative;
+    }
+
+    .error-number {
+      font-size: 5rem;
+      font-weight: 800;
+      color: #667eea;
+      margin-bottom: 20px;
+      line-height: 1;
+      text-shadow: 0 4px 8px rgba(102, 126, 234, 0.2);
+    }
+
+    .error-500 .error-number {
+      color: #e74c3c;
+    }
+
+    .error-title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 15px;
+    }
+
+    .error-description {
+      font-size: 1.1rem;
+      color: #718096;
+      line-height: 1.6;
+      margin-bottom: 35px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .error-actions {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 14px 28px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 140px;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.25);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.35);
+    }
+
+    .btn-secondary {
+      background: #f8f9fa;
+      color: #495057;
+      border: 2px solid #dee2e6;
+    }
+
+    .btn-secondary:hover {
+      background: #e9ecef;
+      border-color: #adb5bd;
+      transform: translateY(-1px);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: white;
+      box-shadow: 0 4px 15px rgba(231, 76, 60, 0.25);
+    }
+
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(231, 76, 60, 0.35);
+    }
+
+    .page-selector {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+    }
+
+    .page-btn {
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      padding: 10px 16px;
+      margin-right: 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      color: #495057;
+    }
+
+    .page-btn.active {
+      background: #667eea;
+      color: white;
+    }
+
+    .page-btn:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .error-illustration {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      opacity: 0.8;
+    }
+
+    .additional-help {
+      background: #f8f9ff;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 30px;
+      border-left: 4px solid #667eea;
+    }
+
+    .error-500 .additional-help {
+      background: #fff5f5;
+      border-left-color: #e74c3c;
+    }
+
+    .help-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 8px;
+    }
+
+    .help-text {
+      font-size: 0.9rem;
+      color: #718096;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+      .error-container {
+        padding: 40px 25px;
+      }
+
+      .error-number {
+        font-size: 4rem;
+      }
+
+      .error-title {
+        font-size: 1.5rem;
+      }
+
+      .error-actions {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .btn {
+        width: 100%;
+        max-width: 250px;
+      }
+
+      .header h1 {
+        font-size: 1.8rem;
+      }
+    }
+
+    .fade-in {
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .error-number {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+  </style>
+</head>
+<body>
+<div class="page-selector">
+  <button class="page-btn active" onclick="showPage('404')">404 페이지</button>
+  <button class="page-btn" onclick="showPage('500')">500 페이지</button>
+</div>
+
+<!-- 404 Error Page -->
+<div id="page-404" class="page active">
+  <div class="container fade-in">
+    <div class="header">
+      <h1>🔍 길을 잃으셨나요?</h1>
+      <p>찾으시는 페이지가 어디론가 사라졌어요</p>
+    </div>
+
+    <div class="error-container">
+      <div class="error-illustration">
+        🗺️
+      </div>
+
+      <div class="error-number">404</div>
+
+      <h2 class="error-title">페이지를 찾을 수 없어요</h2>
+
+      <p class="error-description">
+        요청하신 페이지가 존재하지 않거나 주소가 변경되었을 수 있습니다.<br>
+        다른 페이지를 둘러보시거나 홈으로 돌아가 보세요.
+      </p>
+
+      <div class="error-actions">
+        <button class="btn btn-primary" onclick="goHome()">
+          🏠 홈으로 가기
+        </button>
+        <button class="btn btn-secondary" onclick="goBack()">
+          ← 뒤로 가기
+        </button>
+      </div>
+
+      <div class="additional-help">
+        <div class="help-title">💡 이런 것도 해보세요</div>
+        <div class="help-text">
+          주소를 다시 확인해 보시거나, 검색 기능을 이용해서 원하시는 내용을 찾아보세요.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showPage(pageType) {
+    // 모든 페이지 숨기기
+    document.querySelectorAll('.page').forEach(page => {
+      page.classList.remove('active');
+    });
+
+    // 모든 버튼 비활성화
+    document.querySelectorAll('.page-btn').forEach(btn => {
+      btn.classList.remove('active');
+    });
+
+    // 선택된 페이지 보이기
+    document.getElementById(`page-${pageType}`).classList.add('active');
+
+    // 선택된 버튼 활성화
+    event.target.classList.add('active');
+
+    // 애니메이션 재실행
+    const container = document.querySelector(`#page-${pageType} .container`);
+    container.classList.remove('fade-in');
+    setTimeout(() => container.classList.add('fade-in'), 10);
+  }
+
+  function goHome() {
+    // window.location.href = '/';
+    alert('홈페이지로 이동합니다.');
+  }
+
+  function goBack() {
+    history.back();
+  }
+
+  function refreshPage() {
+    location.reload();
+  }
+
+  function reportIssue() {
+    // window.location.href = '/contact';
+    alert('문의 페이지로 이동합니다.');
+  }
+
+  // 페이지 로드 애니메이션
+  document.addEventListener('DOMContentLoaded', function() {
+    const containers = document.querySelectorAll('.container');
+    containers.forEach(container => {
+      container.classList.add('fade-in');
+    });
+  });
+</script>
+</body>
+</html>
