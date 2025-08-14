@@ -270,11 +270,6 @@
   </style>
 </head>
 <body>
-<div class="page-selector">
-  <button class="page-btn active" onclick="showPage('404')">404 페이지</button>
-  <button class="page-btn" onclick="showPage('500')">500 페이지</button>
-</div>
-
 <!-- 404 Error Page -->
 <div id="page-404" class="page active">
   <div class="container fade-in">
@@ -341,8 +336,7 @@
   }
 
   function goHome() {
-    // window.location.href = '/';
-    alert('홈페이지로 이동합니다.');
+    window.location.href = '/posts';
   }
 
   function goBack() {
