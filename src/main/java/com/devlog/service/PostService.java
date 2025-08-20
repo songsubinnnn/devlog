@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * The type Post service.
@@ -71,7 +72,7 @@ public class PostService {
     public PostResponse getPost(Long id) {
         // 게시글
         Post postEntity = postRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
+            .orElseThrow(() -> new NoSuchElementException("게시글이 존재하지 않습니다."));
 
         // 태그
         List<String> tagNames = postEntity.getPostTags().stream()
@@ -121,7 +122,7 @@ public class PostService {
     @Transactional
     public PostResponse updatePost(Long id, List<Long> existingAttachmentsId, MultipartFile thumbnail, List<MultipartFile> attachments, List<Long> deletedFilesId, PostRequest request) {
         Post post = postRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException(("게시글이 존재하지 않습니다.")));
+            .orElseThrow(() -> new NoSuchElementException(("게시글이 존재하지 않습니다.")));
 
         List<Tag> tagList = tagService.findOrCreateByNames(request.getTags());
 
@@ -169,7 +170,7 @@ public class PostService {
     @Transactional
     public void softDeletePost(Long id) {
         Post post = postRepository.findByIdAndIsDeletedFalse(id)
-            .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
+            .orElseThrow(() -> new NoSuchElementException("게시글이 존재하지 않습니다."));
         post.softDeleted();
     }
 

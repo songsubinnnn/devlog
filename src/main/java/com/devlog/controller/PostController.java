@@ -1,7 +1,6 @@
 package com.devlog.controller;
 
 
-import com.devlog.domain.user.User;
 import com.devlog.dto.post.PostRequest;
 import com.devlog.dto.post.PostResponse;
 import com.devlog.service.PostService;
@@ -14,11 +13,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * The type Post view controller.
@@ -66,26 +64,26 @@ public class PostController {
     }
 
 
-    /**
-     * 등록 처리
-     *
-     * @param request the request
-     * @param author  the author
-     * @return the response entity
-     */
-    @PostMapping
-    public String createPost(@ModelAttribute PostRequest request, MultipartFile thumbnail, List<MultipartFile> attachments, User author, RedirectAttributes ra) {
-        author.setId(1L); // test용
-        try {
-            PostResponse response = postService.createPost(request, thumbnail, attachments, author);
-            logger.info("Post created: {}", response.getId());
-            ra.addFlashAttribute("message", "게시글이 등록되었습니다.");
-            return "redirect:/posts";
-        } catch (Exception e) {
-            ra.addFlashAttribute("error", "게시글 등록 중 문제가 발생했습니다.");
-            return "redirect:/posts/write";
-        }
-    }
+//    /**
+//     * 등록 처리
+//     *
+//     * @param request the request
+//     * @param author  the author
+//     * @return the response entity
+//     */
+//    @PostMapping
+//    public String createPost(@ModelAttribute PostRequest request, MultipartFile thumbnail, List<MultipartFile> attachments, User author, RedirectAttributes ra) {
+//        author.setId(1L); // test용
+//        try {
+//            PostResponse response = postService.createPost(request, thumbnail, attachments, author);
+//            logger.info("Post created: {}", response.getId());
+//            ra.addFlashAttribute("message", "게시글이 등록되었습니다.");
+//            return "redirect:/posts";
+//        } catch (Exception e) {
+//            ra.addFlashAttribute("error", "게시글 등록 중 문제가 발생했습니다.");
+//            return "redirect:/posts/write";
+//        }
+//    }
 
 
     /**

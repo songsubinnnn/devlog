@@ -7,7 +7,6 @@ import com.devlog.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,13 +41,9 @@ public class PostApiController {
     @PostMapping
     public ResponseEntity<PostResponse> createPost(@ModelAttribute PostRequest request, @RequestParam(required = false) MultipartFile thumbnail, @RequestParam(required = false) List<MultipartFile> attachments, User author, RedirectAttributes ra) {
         author.setId(1L); // test용
-        try {
-            PostResponse response = postService.createPost(request, thumbnail, attachments, author);
-            logger.info("Post created: {}", response.getId());
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        PostResponse response = postService.createPost(request, thumbnail, attachments, author);
+        logger.info("Post created: {}", response.getId());
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -61,7 +56,7 @@ public class PostApiController {
     @PutMapping("/{id}")
     public ResponseEntity<PostResponse> updatePost(@PathVariable Long id, @RequestParam(required = false) List<Long> existingAttachmentsId, @RequestParam(required = false) MultipartFile thumbnail, @RequestParam(required = false) List<MultipartFile> attachments, @RequestParam List<Long> deletedFilesId, @ModelAttribute PostRequest request) {
         PostResponse response = postService.updatePost(id, existingAttachmentsId, thumbnail, attachments, deletedFilesId, request);
-        //TODO 예외 처리 정리
+
         return ResponseEntity.ok(response);
     }
 
