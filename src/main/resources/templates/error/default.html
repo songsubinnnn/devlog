@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -382,58 +383,57 @@
   </style>
 </head>
 <body>
-<!-- 404 Error Page -->
-<div id="page-404" class="page">
-  <div class="container error-404 fade-in">
+<!-- Default Error Page -->
+<div id="page-default" class="page">
+  <div class="container error-default fade-in">
     <div class="header">
-      <h1>페이지를 찾을 수 없습니다</h1>
-      <p>요청하신 페이지가 존재하지 않거나 이동되었습니다</p>
+      <h1>오류가 발생했습니다</h1>
+      <p>요청을 처리하는 중에 문제가 발생했습니다</p>
     </div>
 
     <div class="error-container">
       <div class="status-indicator">
         <div class="status-dot"></div>
-        페이지 없음
+        처리 오류
       </div>
 
       <div class="error-illustration">
-        🔍
+        ⚠️
       </div>
 
-      <div class="error-number">404</div>
+      <div class="error-number">ERR</div>
 
-      <h2 class="error-title">페이지를 찾을 수 없음</h2>
+      <h2 class="error-title">요청 처리 오류</h2>
 
       <p class="error-description">
-        입력하신 주소가 정확한지 확인해 주세요.<br>
-        페이지가 삭제되었거나 주소가 변경되었을 수 있습니다.
+        요청을 처리하는 과정에서 예상치 못한 문제가 발생했습니다.<br>
+        잠시 후 다시 시도하거나 다른 방법을 이용해 주세요.
       </p>
 
       <div class="error-actions">
-        <button class="btn btn-primary" onclick="goHome()">
-          홈으로 이동
+        <button class="btn btn-primary" onclick="refreshPage()">
+          다시 시도
         </button>
-        <button class="btn btn-secondary" onclick="goBack()">
-          이전 페이지
+        <button class="btn btn-secondary" onclick="goHome()">
+          홈으로
         </button>
-        <button class="btn btn-secondary" onclick="searchPage()">
-          페이지 검색
+        <button class="btn btn-secondary" onclick="reportIssue()">
+          문제 신고
         </button>
       </div>
 
       <div class="additional-help">
-        <div class="help-title">🎯 추천 행동</div>
+        <div class="help-title">🔧 문제 해결</div>
         <div class="help-text">
-          • 주소창의 URL이 정확한지 다시 한 번 확인해 보세요<br>
-          • 홈페이지에서 원하시는 페이지를 찾아보세요<br>
-          • 검색 기능을 이용해서 콘텐츠를 찾아보세요<br>
-          • 북마크나 즐겨찾기가 오래된 것은 아닌지 확인해 보세요
+          • 인터넷 연결 상태를 확인해 보세요<br>
+          • 브라우저를 새로고침하거나 다시 시작해 보세요<br>
+          • 잠시 후 다시 시도해 보세요<br>
+          • 문제가 계속되면 관리자에게 문의해 주세요
         </div>
       </div>
     </div>
   </div>
 </div>
-
 <script>
   function showPage(pageType) {
     // 모든 페이지 숨기기
