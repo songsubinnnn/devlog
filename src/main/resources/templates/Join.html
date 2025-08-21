@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>회원가입 - DevLog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #f8fafc;
+      min-height: 100vh;
+      line-height: 1.6;
+      color: #1f2937;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .signup-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      border: 1px solid #f1f5f9;
+      padding: 3rem;
+      width: 100%;
+      max-width: 480px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .signup-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: #e2e8f0;
+    }
+
+    .signup-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .signup-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .signup-header h1::before {
+      content: "✨";
+      font-size: 2rem;
+    }
+
+    .signup-header p {
+      color: #6b7280;
+      font-size: 1.125rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #374151;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: #f9fafb;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #64748b;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(100, 116, 139, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .form-input::placeholder {
+      color: #9ca3af;
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem;
+      color: #6b7280;
+      font-size: 1.125rem;
+      transition: color 0.3s ease;
+    }
+
+    .password-toggle:hover {
+      color: #374151;
+    }
+
+    .form-checkbox {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .checkbox-input {
+      width: 1.25rem;
+      height: 1.25rem;
+      border: 2px solid #d1d5db;
+      border-radius: 4px;
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+      margin-top: 0.125rem;
+    }
+
+    .checkbox-input:checked {
+      background: #64748b;
+      border-color: #64748b;
+    }
+
+    .checkbox-input:checked::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 0.875rem;
+      font-weight: bold;
+    }
+
+    .checkbox-label {
+      font-size: 0.875rem;
+      color: #4b5563;
+      line-height: 1.5;
+      cursor: pointer;
+    }
+
+    .checkbox-label a {
+      color: #64748b;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .checkbox-label a:hover {
+      text-decoration: underline;
+    }
+
+    .submit-btn {
+      width: 100%;
+      background: white;
+      color: #111827;
+      border: 2px solid #e2e8f0;
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      font-size: 1.125rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .submit-btn:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+      transform: translateY(-2px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    .submit-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.05), transparent);
+      transition: left 0.5s;
+    }
+
+    .submit-btn:hover::before {
+      left: 100%;
+    }
+
+    .divider {
+      text-align: center;
+      margin: 2rem 0;
+      position: relative;
+      color: #9ca3af;
+      font-size: 0.875rem;
+    }
+
+    .divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: #e5e7eb;
+    }
+
+    .divider span {
+      background: white;
+      padding: 0 1rem;
+      position: relative;
+    }
+
+    .login-link {
+      text-align: center;
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+
+    .login-link a {
+      color: #64748b;
+      text-decoration: none;
+      font-weight: 600;
+      margin-left: 0.25rem;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 2rem;
+      left: 2rem;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #64748b;
+      cursor: pointer;
+      padding: 0.75rem;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      font-size: 1.25rem;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .back-btn:hover {
+      background: #e2e8f0;
+      color: #475569;
+      transform: translateX(-2px);
+    }
+
+    .form-error {
+      color: #ef4444;
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .form-error::before {
+      content: '⚠️';
+      font-size: 0.75rem;
+    }
+
+    .form-success {
+      color: #10b981;
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .form-success::before {
+      content: '✅';
+      font-size: 0.75rem;
+    }
+
+    /* 반응형 디자인 */
+    @media (max-width: 640px) {
+      .signup-container {
+        padding: 2rem 1.5rem;
+        border-radius: 16px;
+      }
+
+      .signup-header h1 {
+        font-size: 2rem;
+      }
+
+      .back-btn {
+        top: 1rem;
+        left: 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 1rem 0.5rem;
+      }
+
+      .signup-container {
+        padding: 1.5rem 1rem;
+      }
+
+      .signup-header h1 {
+        font-size: 1.75rem;
+      }
+
+      .form-input {
+        padding: 0.875rem 1rem;
+      }
+    }
+
+    /* 애니메이션 */
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .signup-container {
+      animation: slideIn 0.6s ease-out;
+    }
+
+    .form-group {
+      animation: slideIn 0.6s ease-out;
+    }
+
+    .form-group:nth-child(1) {
+      animation-delay: 0.1s;
+    }
+
+    .form-group:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .form-group:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    .form-group:nth-child(4) {
+      animation-delay: 0.4s;
+    }
+
+    .form-group:nth-child(5) {
+      animation-delay: 0.5s;
+    }
+  </style>
+</head>
+<body>
+<div class="signup-container">
+  <button class="back-btn" onclick="history.back()">←</button>
+
+  <div class="signup-header">
+    <h1>회원가입</h1>
+    <p>DevLog에 오신 것을 환영합니다</p>
+  </div>
+
+  <form th:action="@{/auth/signup}" method="post" id="signupForm" th:object="${joinRequest}">
+    <div class="form-group">
+      <label for="username" class="form-label">이름</label>
+      <input
+        type="text"
+        id="username"
+        name="username"
+        class="form-input"
+        placeholder="이름을 입력하세요"
+        required
+        th:field="*{username}"
+        th:classappend="${#fields.hasErrors('username')} ? 'error' : ''"
+      />
+      <div th:if="${#fields.hasErrors('username')}" class="form-error" th:errors="*{username}"></div>
+    </div>
+
+    <div class="form-group">
+      <label for="email" class="form-label">이메일</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        class="form-input"
+        placeholder="이메일을 입력하세요"
+        required
+        th:field="*{email}"
+        th:classappend="${#fields.hasErrors('email')} ? 'error' : ''"
+      />
+      <div th:if="${#fields.hasErrors('email')}" class="form-error" th:errors="*{email}"></div>
+    </div>
+
+    <div class="form-group">
+      <label for="nickname" class="form-label">닉네임</label>
+      <input
+        type="text"
+        id="nickname"
+        name="nickname"
+        class="form-input"
+        placeholder="닉네임을 입력하세요"
+        required
+        th:field="*{nickname}"
+        th:classappend="${#fields.hasErrors('nickname')} ? 'error' : ''"
+      />
+      <div th:if="${#fields.hasErrors('nickname')}" class="form-error" th:errors="*{nickname}"></div>
+    </div>
+
+    <div class="form-group">
+      <label for="password" class="form-label">비밀번호</label>
+      <div class="password-wrapper">
+        <input
+          type="password"
+          id="password"
+          name="password"
+          class="form-input"
+          placeholder="비밀번호를 입력하세요"
+          required
+          th:field="*{password}"
+          th:classappend="${#fields.hasErrors('password')} ? 'error' : ''"
+        />
+        <button type="button" class="password-toggle" onclick="togglePassword('password')">👁️</button>
+      </div>
+      <div th:if="${#fields.hasErrors('password')}" class="form-error" th:errors="*{password}"></div>
+    </div>
+
+    <div class="form-group">
+      <label for="confirmPassword" class="form-label">비밀번호 확인</label>
+      <div class="password-wrapper">
+        <input
+          type="password"
+          id="confirmPassword"
+          name="confirmPassword"
+          class="form-input"
+          placeholder="비밀번호를 다시 입력하세요"
+          required
+          th:field="*{confirmPassword}"
+          th:classappend="${#fields.hasErrors('confirmPassword')} ? 'error' : ''"
+        />
+        <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">👁️</button>
+      </div>
+      <div class="form-error" style="display: none;"></div>
+    </div>
+
+    <div class="form-checkbox">
+      <input type="checkbox" id="agreeTerms" name="agreeTerms" class="checkbox-input" required>
+      <label for="agreeTerms" class="checkbox-label">
+        <a href="/terms" target="_blank">이용약관</a>과
+        <a href="/privacy" target="_blank">개인정보처리방침</a>에 동의합니다.
+      </label>
+    </div>
+
+    <button type="submit" class="submit-btn">
+      계정 만들기
+    </button>
+  </form>
+
+  <div class="divider">
+    <span>또는</span>
+  </div>
+
+  <div class="login-link">
+    이미 계정이 있으신가요?
+    <a href="/login">로그인하기</a>
+  </div>
+</div>
+
+<script>
+  function togglePassword(fieldId) {
+    const field = document.getElementById(fieldId);
+    const toggle = field.nextElementSibling;
+    console.log(toggle);
+
+    if (field.type === 'password') {
+      field.type = 'text';
+      toggle.textContent = '🙈';
+    } else {
+      field.type = 'password';
+      toggle.textContent = '👁️';
+    }
+  }
+
+  // 실시간 비밀번호 확인
+  const passwordInput = document.getElementById('password');
+  const confirmInput = document.getElementById('confirmPassword');
+
+  function validatePasswords(){
+    const passwordValue = passwordInput.value;
+    const confirmValue = confirmInput.value;
+    const errorDiv = confirmInput.closest('.form-group').querySelector('.form-error');
+
+    if (passwordValue !== confirmValue) {
+      errorDiv.style.display = 'block';
+      errorDiv.textContent = '비밀번호가 일치하지 않습니다.';
+    } else {
+      errorDiv.style.display = 'none';
+    }
+  }
+
+  passwordInput.addEventListener('input', validatePasswords);
+  confirmInput.addEventListener('input', validatePasswords);
+
+  // 폼 제출 시 유효성 검사
+  document.getElementById('signupForm').addEventListener('submit', function (e) {
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const agreeTerms = document.getElementById('agreeTerms').checked;
+
+    if (password !== confirmPassword) {
+      e.preventDefault();
+      alert('비밀번호가 일치하지 않습니다.');
+      return;
+    }
+
+    if (!agreeTerms) {
+      e.preventDefault();
+      alert('이용약관에 동의해주세요.');
+      return;
+    }
+  });
+</script>
+</body>
+</html>

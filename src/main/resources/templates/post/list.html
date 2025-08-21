@@ -48,6 +48,13 @@
       font-size: 2rem;
     }
 
+    /* 헤더 버튼 컨테이너 */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
     .write-btn {
       background: #111827;
       color: white;
@@ -70,6 +77,33 @@
 
     .write-btn:hover {
       background: #374151;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(17, 24, 39, 0.3);
+    }
+
+    .login-btn {
+      background: transparent;
+      color: #111827;
+      padding: 0.875rem 1.75rem;
+      border: 2px solid #111827;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+
+    .login-btn::before {
+      content: "👤";
+    }
+
+    .login-btn:hover {
+      background: #111827;
+      color: white;
       transform: translateY(-2px);
       box-shadow: 0 8px 25px rgba(17, 24, 39, 0.3);
     }
@@ -260,6 +294,11 @@
         font-size: 2rem;
       }
 
+      .header-actions {
+        flex-direction: row;
+        gap: 0.75rem;
+      }
+
       .post-grid {
         grid-template-columns: 1fr;
         gap: 1.5rem;
@@ -284,6 +323,18 @@
     }
 
     @media (max-width: 480px) {
+      .header-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+        width: 100%;
+      }
+
+      .write-btn,
+      .login-btn {
+        width: 100%;
+        justify-content: center;
+      }
+
       .post-grid {
         grid-template-columns: 1fr;
       }
@@ -333,8 +384,10 @@
   <!-- 상단 헤더 -->
   <div class="header">
     <h2>DevLog</h2>
-    <a href="/posts/write" class="write-btn">글쓰기</a>
-    <a href="/login" class="login-btn">로그인</a>
+    <div class="header-actions">
+      <a href="/posts/write" class="write-btn">글쓰기</a>
+      <a href="/login" class="login-btn">로그인</a>
+    </div>
   </div>
 
   <!-- 카드 리스트 -->
@@ -345,7 +398,7 @@
           <!-- Base64 이미지 표시 -->
           <img th:if="${post.hasThumbnail()}"
                th:src="${post.thumbnail.base64}"
-               >
+          >
 
           <!-- 썸네일이 없을 때 기본 아이콘 -->
           <div th:unless="${post.hasThumbnail()}" class="no-thumbnail">

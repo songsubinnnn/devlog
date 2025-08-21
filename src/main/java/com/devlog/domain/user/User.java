@@ -17,7 +17,7 @@ import lombok.*;
  * @since 2025-07-15
  */
 @Entity
-@Table(name="users")
+@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,10 +28,14 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String username;
+
     @Column(nullable = false, unique = true)
     private String email;
 
     private String password;
+
+    private String confirmPassword;
 
     @Column(nullable = false, unique = true)
     private String nickname;

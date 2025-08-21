@@ -66,12 +66,12 @@ public class FileService {
 
     public void markAsDeleted(List<Long> deletedFilesId) {
         // 삭제된 파일 처리
-        for(Long fileId : deletedFilesId) {
-                fileRepository.findById(fileId).ifPresent(file -> {
-                    file.setIsDeleted(true);
-                    file.setDeletedAt(LocalDateTime.now());
-                    fileRepository.save(file);
-                });
+        for (Long fileId : deletedFilesId) {
+            fileRepository.findById(fileId).ifPresent(file -> {
+                file.setIsDeleted(true);
+                file.setDeletedAt(LocalDateTime.now());
+                fileRepository.save(file);
+            });
         }
     }
 
@@ -88,22 +88,30 @@ public class FileService {
         String storedFileName = UUID.randomUUID() + "." + ext; // 저장 파일명은 랜덤값으로 조합
         String fullPath = Paths.get(uploadDir, storedFileName).toString();
 
+        java.io.File savedFile = new java.io.File(fullPath);
         try {
-            file.transferTo(new java.io.File(fullPath));
+            file.transferTo(savedFile); // 파일 저장
+
+            File entity = File.builder()
+                .originalFileName(originFileName)
+                .storedFileName(storedFileName)
+                .filePath(fullPath)
+                .fileUrl("/uploads/" + storedFileName)
+                .size(file.getSize())
+                .fileType(fileType)
+                .post(post)
+                .build();
+
+            return fileRepository.save(entity); // DB 저장
+
         } catch (IOException e) {
             throw new IllegalArgumentException("파일 저장 실패", e);
+        } catch (RuntimeException e) {
+            if (savedFile.exists()) {
+                savedFile.delete(); // DB 저장 실패 시 file 삭제
+            }
+            throw e;
         }
-
-        File entity = File.builder()
-            .originalFileName(originFileName)
-            .storedFileName(storedFileName)
-            .filePath(fullPath)
-            .fileUrl("/uploads/" + storedFileName)
-            .size(file.getSize())
-            .fileType(fileType)
-            .post(post)
-            .build();
-        return fileRepository.save(entity);
 
     }
 

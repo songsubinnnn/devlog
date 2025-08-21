@@ -1,10 +1,10 @@
 package com.devlog.controller;
 
+import com.devlog.dto.user.UserJoinRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.logging.Logger;
 
@@ -22,13 +22,18 @@ import java.util.logging.Logger;
  */
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/login")
-public class LoginController {
-    private static final Logger logger = Logger.getLogger(LoginController.class.getName());
+public class UserController {
+    private static final Logger logger = Logger.getLogger(UserController.class.getName());
 
-    @GetMapping
+    @GetMapping("/login")
     public String loginView(Model model) {
         return "login"; // templates/login.html
+    }
+
+    @GetMapping("/join")
+    public String joinView(Model model) {
+        model.addAttribute("joinRequest", new UserJoinRequest());
+        return "join";
     }
 
 }
