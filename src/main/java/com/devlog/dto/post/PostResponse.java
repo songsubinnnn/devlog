@@ -36,9 +36,6 @@ public class PostResponse {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 
-//    @JsonIgnore
-//    private String thumbnailPath; // 저장 경로
-//    private String thumbnailBase64; // base64 인코딩된 썸네일
     private FileResponse thumbnail;
     private List<FileResponse> attachments; // 첨부파일
 
