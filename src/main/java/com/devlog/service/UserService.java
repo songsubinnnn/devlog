@@ -1,9 +1,9 @@
 package com.devlog.service;
 
 import com.devlog.domain.user.User;
+import com.devlog.dto.user.LoginRequest;
 import com.devlog.dto.user.UserJoinRequest;
 import com.devlog.dto.user.UserResponse;
-import com.devlog.mapper.UserMapper;
 import com.devlog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -16,17 +16,25 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserService {
     public final UserRepository userRepository;
-    public final UserMapper userMapper;
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     @Transactional
     public UserResponse join(UserJoinRequest userJoinRequest) {
-        User userEntity = userMapper.toEntity(userJoinRequest);
+        User userEntity = userJoinRequest.toEntity();
         User saved = userRepository.save(userEntity);
 
         log.info("유저 등록 완료 ---- ID : {}", saved.getId());
-        return userMapper.toResponse(saved);
+        return UserResponse.toResponse(saved);
     }
-    //TODO join, login
+
+    @Transactional
+    public UserResponse login(LoginRequest loginRequest) {
+        User userEntity = loginRequest.toEntity();
+        User user = userRepository.findByEmail(userEntity.getEmail())
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        return UserResponse.toResponse(user);
+    }
+
 
 }

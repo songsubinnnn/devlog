@@ -1,5 +1,6 @@
 package com.devlog.dto.user;
 
+import com.devlog.domain.user.User;
 import lombok.*;
 
 /**
@@ -25,4 +26,13 @@ public class UserJoinRequest {
     private String password;
     private String confirmPassword;
     private String nickname;
+
+    public User toEntity(){
+        return User.builder()
+            .email(email)
+            .password(password)
+            .role(User.Role.USER) // test용
+            .nickname(nickname)
+            .build();
+    }
 }
